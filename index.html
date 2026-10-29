@@ -1,0 +1,1723 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#0c1120">
+<title>Arcane &amp; Starlight Defense</title>
+<style>
+  :root {
+    --bg: #0c1120;
+    --panel: rgba(14, 19, 34, 0.78);
+    --panel-solid: #121a2e;
+    --line: rgba(255, 255, 255, 0.09);
+    --text: #e8ecff;
+    --muted: #9aa5c7;
+    --cyan: #7fd8ff;
+    --gold: #ffcf5a;
+    --red: #ff6b7a;
+    --green: #6dff9e;
+    --safe-t: env(safe-area-inset-top, 0px);
+    --safe-b: env(safe-area-inset-bottom, 0px);
+    --safe-l: env(safe-area-inset-left, 0px);
+    --safe-r: env(safe-area-inset-right, 0px);
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; height: 100%; overflow: hidden; background: var(--bg); color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  #scene { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; outline: none; }
+  button { font: inherit; color: inherit; touch-action: manipulation; cursor: pointer; }
+  .glass {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+    -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  }
+
+  /* ---------- Top HUD ---------- */
+  #hud {
+    position: fixed; top: calc(8px + var(--safe-t)); left: calc(10px + var(--safe-l)); right: calc(10px + var(--safe-r));
+    display: flex; justify-content: space-between; align-items: flex-start; pointer-events: none; z-index: 5;
+  }
+  .hud-group { display: flex; gap: 8px; pointer-events: auto; }
+  .pill {
+    display: flex; align-items: center; gap: 7px; height: 38px; padding: 0 13px 0 10px;
+    font-weight: 700; font-size: 16px; font-variant-numeric: tabular-nums; letter-spacing: 0.2px;
+  }
+  .pill svg { width: 20px; height: 20px; flex: none; }
+  .pill .label { font-weight: 600; color: var(--muted); font-size: 13px; }
+  .pill.bump { animation: bump 0.35s ease-out; }
+  .pill.hurt { animation: hurt 0.45s ease-out; }
+  @keyframes bump { 0% { transform: scale(1); } 40% { transform: scale(1.14); } 100% { transform: scale(1); } }
+  @keyframes hurt { 0% { transform: translateX(0); background: rgba(255, 70, 90, 0.55); } 25% { transform: translateX(-4px); } 50% { transform: translateX(4px); } 100% { transform: translateX(0); } }
+  .icon-btn {
+    width: 40px; height: 38px; display: grid; place-items: center; padding: 0; font-weight: 800; font-size: 15px;
+  }
+  .icon-btn svg { width: 18px; height: 18px; }
+  .icon-btn:active { transform: scale(0.94); }
+  .icon-btn.on { color: var(--gold); border-color: rgba(255, 207, 90, 0.5); }
+
+  /* ---------- Bottom build bar ---------- */
+  #bottom-bar {
+    position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(8px + var(--safe-b));
+    display: flex; gap: 8px; align-items: stretch; padding: 6px; z-index: 5; max-width: calc(100% - 20px);
+  }
+  .tower-card {
+    position: relative; display: flex; align-items: center; gap: 9px; min-width: 160px; height: 56px; padding: 6px 26px 6px 6px;
+    border-radius: 10px; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.04); text-align: left;
+    transition: transform 0.12s, border-color 0.15s, background 0.15s, opacity 0.15s;
+  }
+  .tower-card:active { transform: scale(0.97); }
+  .tower-card .ico { width: 44px; height: 44px; border-radius: 9px; display: grid; place-items: center; flex: none; }
+  .tower-card .ico svg { width: 30px; height: 30px; }
+  .tower-card .nm { font-weight: 700; font-size: 14px; line-height: 1.1; }
+  .tower-card .cost { display: flex; align-items: center; gap: 4px; margin-top: 3px; color: var(--gold); font-weight: 700; font-size: 13px; }
+  .tower-card .cost svg { width: 13px; height: 13px; }
+  .tower-card .key {
+    position: absolute; top: 4px; right: 6px; font-size: 10px; color: var(--muted); border: 1px solid var(--line);
+    border-radius: 4px; padding: 0 4px; line-height: 14px;
+  }
+  .tower-card.active { border-color: var(--cyan); background: rgba(127, 216, 255, 0.14); box-shadow: 0 0 0 1px var(--cyan) inset, 0 0 18px rgba(127, 216, 255, 0.25); }
+  .tower-card.poor { opacity: 0.5; }
+  .tower-card.poor .cost { color: var(--red); }
+  #start-wave {
+    border: 0; border-radius: 10px; padding: 0 18px; min-width: 128px; font-weight: 800; font-size: 15px; color: #2a1c00;
+    background: linear-gradient(180deg, #ffe08a, #f5b730); box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25) inset, 0 4px 14px rgba(245, 183, 48, 0.35);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+  }
+  #start-wave small { font-weight: 600; font-size: 11px; opacity: 0.75; }
+  #start-wave:disabled { background: rgba(255, 255, 255, 0.06); color: var(--muted); box-shadow: none; cursor: default; }
+  #start-wave:not(:disabled) { animation: glow 1.8s ease-in-out infinite; }
+  @keyframes glow { 50% { box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.3) inset, 0 4px 26px rgba(245, 183, 48, 0.7); } }
+
+  /* ---------- Tower info panel ---------- */
+  #tower-info {
+    position: fixed; right: calc(10px + var(--safe-r)); top: calc(56px + var(--safe-t)); width: 210px; padding: 12px; z-index: 6;
+    transform-origin: top right; animation: pop 0.16s ease-out;
+  }
+  #tower-info[hidden] { display: none; }
+  @keyframes pop { from { transform: scale(0.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  #tower-info h3 { margin: 0 0 2px; font-size: 16px; }
+  #tower-info .role { color: var(--muted); font-size: 12px; margin-bottom: 10px; }
+  .stat-row { display: flex; justify-content: space-between; font-size: 13px; padding: 4px 0; border-top: 1px solid var(--line); }
+  .stat-row span:last-child { font-weight: 700; font-variant-numeric: tabular-nums; }
+  .info-actions { display: flex; gap: 8px; margin-top: 10px; }
+  .btn {
+    flex: 1; height: 36px; border-radius: 9px; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.06); font-weight: 700; font-size: 13px;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn.danger { color: #ffd7dc; border-color: rgba(255, 107, 122, 0.45); background: rgba(255, 107, 122, 0.14); }
+  .btn.primary { color: #2a1c00; border: 0; background: linear-gradient(180deg, #ffe08a, #f5b730); }
+  .btn.ghost { background: transparent; }
+
+  /* ---------- Floaters, toast, hints ---------- */
+  #floaters { position: fixed; inset: 0; pointer-events: none; z-index: 4; overflow: hidden; }
+  .floater {
+    position: absolute; left: 0; top: 0; font-weight: 800; font-size: 15px; white-space: nowrap; will-change: transform, opacity;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8), 0 0 2px rgba(0, 0, 0, 0.9);
+  }
+  .floater.gold { color: var(--gold); }
+  .floater.red { color: var(--red); font-size: 18px; }
+  #place-hint {
+    position: fixed; left: 0; top: 0; z-index: 4; pointer-events: none; font-size: 12px; font-weight: 700; padding: 5px 9px;
+    border-radius: 8px; background: rgba(10, 14, 26, 0.85); border: 1px solid rgba(109, 255, 158, 0.5); color: var(--green); white-space: nowrap;
+  }
+  #place-hint.bad { border-color: rgba(255, 107, 122, 0.5); color: var(--red); }
+  #place-hint[hidden] { display: none; }
+  #toast {
+    position: fixed; left: 50%; top: calc(56px + var(--safe-t)); transform: translate(-50%, -8px); z-index: 7; pointer-events: none;
+    padding: 9px 16px; font-weight: 700; font-size: 14px; opacity: 0; transition: opacity 0.2s, transform 0.2s; white-space: nowrap;
+  }
+  #toast.show { opacity: 1; transform: translate(-50%, 0); }
+  #toast.warn { color: #ffd7dc; border-color: rgba(255, 107, 122, 0.45); }
+  #toast.big { font-size: 20px; padding: 12px 22px; color: var(--gold); }
+  #rotate-hint {
+    position: fixed; left: 50%; bottom: calc(84px + var(--safe-b)); transform: translateX(-50%); z-index: 4; font-size: 12px;
+    color: var(--muted); padding: 6px 12px; pointer-events: none; white-space: nowrap;
+  }
+  #rotate-hint[hidden] { display: none; }
+  #fps { position: fixed; left: calc(10px + var(--safe-l)); bottom: calc(8px + var(--safe-b)); z-index: 8; font: 600 11px ui-monospace, monospace; color: var(--green); padding: 3px 6px; }
+  #fps[hidden] { display: none; }
+
+  /* ---------- Overlays ---------- */
+  #overlay {
+    position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; padding: 16px;
+    background: radial-gradient(ellipse at center, rgba(8, 11, 22, 0.55), rgba(5, 7, 14, 0.88));
+    -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); animation: fade 0.25s ease-out;
+  }
+  #overlay[hidden] { display: none; }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+  .card {
+    width: min(440px, 100%); max-height: calc(100vh - 32px); overflow: auto; padding: 22px 22px 18px; text-align: center;
+    background: linear-gradient(180deg, rgba(24, 32, 56, 0.96), rgba(13, 18, 33, 0.96)); border: 1px solid rgba(127, 216, 255, 0.22);
+    border-radius: 16px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55), 0 0 40px rgba(127, 216, 255, 0.08);
+    animation: pop 0.22s ease-out;
+  }
+  .card .eyebrow { font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--cyan); font-weight: 700; }
+  .card h1 { margin: 6px 0 4px; font-size: 26px; line-height: 1.15; letter-spacing: 0.3px;
+    background: linear-gradient(90deg, #ffd98a, #ffffff 45%, #8fe3ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .card h2 { margin: 6px 0 4px; font-size: 24px; }
+  .card p { color: var(--muted); font-size: 14px; line-height: 1.45; margin: 8px 0; }
+  .card ul { text-align: left; color: var(--muted); font-size: 13.5px; line-height: 1.5; padding-left: 20px; margin: 10px 0 14px; }
+  .card ul b { color: var(--text); }
+  .card .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 14px 0; }
+  .card .stat { border: 1px solid var(--line); border-radius: 10px; padding: 8px 4px; background: rgba(255, 255, 255, 0.03); }
+  .card .stat b { display: block; font-size: 20px; font-variant-numeric: tabular-nums; }
+  .card .stat span { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .card .actions { display: flex; gap: 10px; margin-top: 14px; }
+  .card .actions .btn { height: 44px; font-size: 15px; }
+  .card .foot { margin-top: 12px; font-size: 11px; color: #6c7699; }
+  .win h2 { color: var(--gold); }
+  .lose h2 { color: var(--red); }
+
+  #boot { position: fixed; inset: 0; display: grid; place-items: center; z-index: 30; background: var(--bg); color: var(--muted); font-size: 14px; padding: 24px; text-align: center; }
+  #boot[hidden] { display: none; }
+
+  @media (max-height: 460px) {
+    .pill { height: 34px; font-size: 15px; }
+    .icon-btn { height: 34px; width: 38px; }
+    .tower-card { height: 50px; min-width: 140px; }
+    .tower-card .ico { width: 38px; height: 38px; }
+    #tower-info { top: calc(50px + var(--safe-t)); width: 196px; padding: 10px; }
+    .card { padding: 16px 18px 14px; }
+    .card h1 { font-size: 22px; }
+    .card ul { margin: 6px 0 8px; }
+  }
+  @media (max-width: 520px) {
+    .pill .label { display: none; }
+    .pill { padding: 0 10px 0 8px; gap: 5px; }
+    .hud-group { gap: 6px; }
+  }
+</style>
+<script type="importmap">
+  { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js" } }
+</script>
+</head>
+<body>
+<canvas id="scene" tabindex="0" aria-label="Game board"></canvas>
+
+<div id="hud">
+  <div class="hud-group">
+    <div class="pill glass" id="lives-pill" title="Crystal lives">
+      <svg viewBox="0 0 24 24"><path fill="#ff6b7a" d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4h2c.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z"/></svg>
+      <span id="lives">20</span>
+    </div>
+    <div class="pill glass" id="coins-pill" title="Coins">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="#f5b730"/><circle cx="12" cy="12" r="6.2" fill="none" stroke="#ffe08a" stroke-width="1.6"/><path d="M12 8.2v7.6M9.8 10h3.6a1.4 1.4 0 0 1 0 2.8h-2.8a1.4 1.4 0 0 0 0 2.8h3.6" stroke="#8a5a00" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+      <span id="coins">0</span>
+    </div>
+    <div class="pill glass" id="wave-pill" title="Wave">
+      <svg viewBox="0 0 24 24"><path d="M3 15c2.5 0 2.5-3 5-3s2.5 3 5 3 2.5-3 5-3 2.5 3 3 3M3 10c2.5 0 2.5-3 5-3s2.5 3 5 3 2.5-3 5-3 2.5 3 3 3" stroke="#7fd8ff" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+      <span class="label">Wave</span><span id="wave">0/1</span>
+    </div>
+  </div>
+  <div class="hud-group">
+    <button class="icon-btn glass" id="speed-btn" title="Game speed (F)" aria-label="Game speed">1×</button>
+    <button class="icon-btn glass" id="pause-btn" title="Pause (Space)" aria-label="Pause">
+      <svg viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1.2" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1.2" fill="currentColor"/></svg>
+    </button>
+  </div>
+</div>
+
+<div id="bottom-bar" class="glass">
+  <div id="tower-cards" style="display:flex; gap:8px"></div>
+  <button id="start-wave"><span id="start-wave-label">Start wave</span><small id="start-wave-sub"></small></button>
+</div>
+
+<div id="tower-info" class="glass" hidden></div>
+<div id="toast" class="glass"></div>
+<div id="floaters"></div>
+<div id="place-hint" hidden></div>
+<div id="rotate-hint" class="glass" hidden>Turn your phone sideways for a bigger board</div>
+<div id="fps" class="glass" hidden></div>
+<div id="overlay" hidden></div>
+<div id="boot">Loading the 3D engine…</div>
+
+<script type="module">
+import * as THREE from 'three';
+
+/* =====================================================================
+   CONTENT — towers, enemies and maps are plain data.
+   Later phases add entries here; the engine reads whatever is listed.
+   Distances are in tiles, times in seconds.
+   ===================================================================== */
+const CONTENT = {
+  towers: {
+    arcaneArcher: {
+      name: 'Arcane Archer',
+      side: 'fantasy',
+      role: 'Single target, long range, fast',
+      cost: 50,
+      sellRefund: 0.7,          // share of total spent returned on sale
+      range: 3.4,
+      fireRate: 1.6,            // shots per second
+      damage: 13,
+      damageType: 'pierce',
+      projectileSpeed: 15,
+      targeting: 'first',       // furthest along the path
+      model: 'arcaneArcher',
+      color: 0x8fc8ff,
+      hotkey: '1',
+    },
+  },
+  enemies: {
+    goblin: {
+      name: 'Goblin',
+      side: 'fantasy',
+      health: 50,
+      speed: 1.85,              // tiles per second
+      armor: 0,                 // flat reduction per hit
+      resist: {},               // damage type -> multiplier, e.g. { pierce: 0.5 }
+      reward: 5,
+      livesCost: 1,
+      model: 'goblin',
+      color: 0x6fbf4a,
+      hitHeight: 0.38,
+    },
+  },
+  maps: {
+    trainingGrove: {
+      name: 'Training Grove',
+      cols: 16,
+      rows: 10,
+      // Waypoints in tile coordinates [column, row]. The first one sits just
+      // off the board (the spawn portal); the last one is the crystal tile.
+      path: [[-1, 2], [3, 2], [3, 7], [7, 7], [7, 2], [11, 2], [11, 6], [14, 6]],
+      startCoins: 120,
+      startLives: 20,
+      towers: ['arcaneArcher'],
+      waves: [
+        { groups: [{ enemy: 'goblin', count: 18, interval: 0.75, delay: 0 }] },
+      ],
+    },
+  },
+};
+
+const CURRENT_MAP = 'trainingGrove';
+
+/* =====================================================================
+   SAVE — browser storage, wrapped so a blocked storage never breaks play
+   ===================================================================== */
+const SAVE_KEY = 'arcaneStarlight.v1';
+const Save = {
+  data: { settings: { speed: 1 }, stats: { runs: 0, wins: 0, bestLives: 0 } },
+  load() {
+    try {
+      const raw = localStorage.getItem(SAVE_KEY);
+      if (!raw) return;
+      const d = JSON.parse(raw);
+      this.data.settings = { ...this.data.settings, ...(d.settings || {}) };
+      this.data.stats = { ...this.data.stats, ...(d.stats || {}) };
+    } catch (e) { /* storage unavailable: play on without saving */ }
+  },
+  write() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(this.data)); } catch (e) { /* ignore */ } },
+};
+Save.load();
+
+/* Tiny event bus — the audio phase will listen to these. */
+const Events = {
+  handlers: {},
+  on(name, fn) { (this.handlers[name] ||= []).push(fn); },
+  emit(name, payload) { (this.handlers[name] || []).forEach((fn) => fn(payload)); },
+};
+
+/* =====================================================================
+   RENDERER, SCENE, CAMERA, LIGHTS
+   ===================================================================== */
+const canvas = document.getElementById('scene');
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+} catch (err) {
+  document.getElementById('boot').textContent = 'This browser could not start 3D graphics (WebGL). Try Chrome or update your browser.';
+  throw err;
+}
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0c1120);
+scene.fog = new THREE.Fog(0x0c1120, 30, 70);
+
+const camera = new THREE.PerspectiveCamera(30, 1, 0.5, 200);
+const CAM_PITCH = THREE.MathUtils.degToRad(52);
+const camDir = new THREE.Vector3(0, Math.sin(CAM_PITCH), Math.cos(CAM_PITCH)); // target -> camera
+const camTarget = new THREE.Vector3(0, 0, 0);
+const camBase = new THREE.Vector3();
+let camShake = 0;
+
+scene.add(new THREE.HemisphereLight(0xb8c8ff, 0x2a2238, 0.85));
+const sun = new THREE.DirectionalLight(0xfff0d8, 2.4);
+sun.position.set(-7, 14, 8);
+sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048);
+Object.assign(sun.shadow.camera, { left: -12, right: 12, top: 10, bottom: -10, near: 1, far: 40 });
+sun.shadow.bias = -0.0005;
+sun.shadow.normalBias = 0.02;
+scene.add(sun);
+const rim = new THREE.DirectionalLight(0x7f9dff, 0.6);
+rim.position.set(8, 6, -10);
+scene.add(rim);
+
+/* Soft round texture shared by particles and glows */
+const dotTex = (() => {
+  const c = document.createElement('canvas');
+  c.width = c.height = 64;
+  const g = c.getContext('2d');
+  const grd = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+  grd.addColorStop(0, 'rgba(255,255,255,1)');
+  grd.addColorStop(0.35, 'rgba(255,255,255,0.55)');
+  grd.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = grd;
+  g.fillRect(0, 0, 64, 64);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+})();
+
+/* =====================================================================
+   MAP MODEL — grid, path tiles and the walkable polyline
+   ===================================================================== */
+const TILE_H = 0.22;   // top of a buildable tile
+const PATH_H = 0.12;   // top of a path tile
+
+function buildMapModel(def) {
+  const { cols, rows } = def;
+  const toWorld = (c, r, y = 0) => new THREE.Vector3(c - cols / 2 + 0.5, y, r - rows / 2 + 0.5);
+  const key = (c, r) => c + ',' + r;
+  const pathTiles = new Set();
+  const wps = def.path;
+  for (let i = 0; i < wps.length - 1; i++) {
+    let [c, r] = wps[i];
+    const [c1, r1] = wps[i + 1];
+    const dc = Math.sign(c1 - c), dr = Math.sign(r1 - r);
+    while (true) {
+      if (c >= 0 && c < cols && r >= 0 && r < rows) pathTiles.add(key(c, r));
+      if (c === c1 && r === r1) break;
+      c += dc; r += dr;
+    }
+  }
+  const points = wps.map(([c, r]) => toWorld(c, r, PATH_H));
+  const segLens = [];
+  let total = 0;
+  for (let i = 0; i < points.length - 1; i++) {
+    const L = points[i].distanceTo(points[i + 1]);
+    segLens.push(L);
+    total += L;
+  }
+  const [cc, cr] = wps[wps.length - 1];
+  return {
+    def, cols, rows, toWorld, key, pathTiles, points, segLens, total,
+    crystalTile: { c: cc, r: cr },
+    inside: (c, r) => c >= 0 && c < cols && r >= 0 && r < rows,
+    isPath: (c, r) => pathTiles.has(key(c, r)),
+  };
+}
+
+/* Position and heading at a distance along the path */
+function samplePath(model, dist, out) {
+  let d = Math.max(0, dist);
+  const n = model.segLens.length;
+  for (let i = 0; i < n; i++) {
+    const L = model.segLens[i];
+    if (d <= L || i === n - 1) {
+      const a = model.points[i], b = model.points[i + 1];
+      out.lerpVectors(a, b, L > 0 ? Math.min(d / L, 1) : 0);
+      return Math.atan2(b.x - a.x, b.z - a.z);
+    }
+    d -= L;
+  }
+  return 0;
+}
+
+/* =====================================================================
+   PLACEHOLDER MODELS — simple shapes until the visual style is chosen
+   ===================================================================== */
+const mat = (color, opts = {}) => new THREE.MeshStandardMaterial({ color, roughness: 0.75, metalness: 0.05, ...opts });
+function shadowed(obj) { obj.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } }); return obj; }
+
+const MODELS = {
+  towers: {
+    arcaneArcher(def) {
+      const g = new THREE.Group();
+      const stone = mat(0x8d93a3, { roughness: 0.9 });
+      const stoneDark = mat(0x6a7082, { roughness: 0.9 });
+      const wood = mat(0x9b6b3d, { roughness: 0.8 });
+      const glow = new THREE.MeshStandardMaterial({ color: def.color, emissive: def.color, emissiveIntensity: 1.6, roughness: 0.3 });
+
+      const base = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.42, 0.26, 8), stoneDark);
+      base.position.y = 0.13;
+      const column = new THREE.Mesh(new THREE.CylinderGeometry(0.23, 0.29, 0.5, 8), stone);
+      column.position.y = 0.51;
+      const rune = new THREE.Mesh(new THREE.TorusGeometry(0.3, 0.028, 6, 32), glow);
+      rune.rotation.x = Math.PI / 2;
+      rune.position.y = 0.3;
+
+      const head = new THREE.Group();
+      head.position.y = 0.8;
+      const deck = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.27, 0.09, 8), stoneDark);
+      const recoil = new THREE.Group();
+      const stock = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.09, 0.5), wood);
+      stock.position.set(0, 0.11, 0.02);
+      const bow = new THREE.Mesh(new THREE.TorusGeometry(0.24, 0.03, 6, 14, Math.PI), wood);
+      bow.rotation.x = Math.PI / 2;
+      bow.position.set(0, 0.12, 0.12);
+      const bolt = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.42, 6), glow);
+      bolt.rotation.x = Math.PI / 2;
+      bolt.position.set(0, 0.17, 0.1);
+      const gem = new THREE.Mesh(new THREE.OctahedronGeometry(0.07), glow);
+      gem.position.set(0, 0.22, -0.2);
+      recoil.add(stock, bow, bolt, gem);
+      head.add(deck, recoil);
+
+      g.add(base, column, rune, head);
+      shadowed(g);
+      g.userData = { head, recoil, glow, bolt, muzzleY: 0.97 };
+      return g;
+    },
+  },
+  enemies: {
+    goblin(def, bodyMat) {
+      // Geometry and shared materials are made once and reused by every goblin
+      const G = (MODELS._goblin ||= {
+        body: new THREE.SphereGeometry(0.19, 14, 10), head: new THREE.SphereGeometry(0.14, 14, 10),
+        ear: new THREE.ConeGeometry(0.045, 0.17, 6), eye: new THREE.SphereGeometry(0.025, 6, 6),
+        arm: new THREE.CapsuleGeometry(0.04, 0.12, 3, 6), cloth: mat(0x5a3d2b),
+        eyeMat: new THREE.MeshStandardMaterial({ color: 0xffe066, emissive: 0xffc400, emissiveIntensity: 1.4 }),
+      });
+      const g = new THREE.Group();
+      const bob = new THREE.Group();
+      const skin = bodyMat;
+      const cloth = G.cloth;
+      const body = new THREE.Mesh(G.body, cloth);
+      body.scale.set(1, 1.1, 0.9);
+      body.position.y = 0.22;
+      const head = new THREE.Mesh(G.head, skin);
+      head.position.set(0, 0.47, 0.03);
+      const earL = new THREE.Mesh(G.ear, skin);
+      earL.position.set(-0.14, 0.52, 0.0);
+      earL.rotation.z = Math.PI / 2.4;
+      const earR = earL.clone();
+      earR.position.x = 0.14;
+      earR.rotation.z = -Math.PI / 2.4;
+      const eyeL = new THREE.Mesh(G.eye, G.eyeMat);
+      eyeL.position.set(-0.05, 0.49, 0.15);
+      const eyeR = eyeL.clone();
+      eyeR.position.x = 0.05;
+      const armL = new THREE.Mesh(G.arm, skin);
+      armL.position.set(-0.19, 0.24, 0.02);
+      armL.rotation.z = 0.35;
+      const armR = armL.clone();
+      armR.position.x = 0.19;
+      armR.rotation.z = -0.35;
+      bob.add(body, head, earL, earR, eyeL, eyeR, armL, armR);
+      g.add(bob);
+      shadowed(g);
+      g.userData = { bob, armL, armR };
+      return g;
+    },
+  },
+};
+
+/* =====================================================================
+   BOARD — tiles, slab, crystal, spawn portal, ambient fireflies
+   ===================================================================== */
+let map;                 // map model
+const boardGroup = new THREE.Group();
+scene.add(boardGroup);
+let crystal = null;      // { group, mesh, mat, light, halo, base }
+let portal = null;
+
+function buildBoard() {
+  boardGroup.clear();
+  const { cols, rows } = map;
+
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(120, 120), mat(0x111726, { roughness: 1 }));
+  ground.rotation.x = -Math.PI / 2;
+  ground.position.y = -0.8;
+  ground.receiveShadow = true;
+  boardGroup.add(ground);
+
+  const slab = new THREE.Mesh(new THREE.BoxGeometry(cols + 0.8, 0.8, rows + 0.8), mat(0x2b3142, { roughness: 0.95 }));
+  slab.position.y = -0.4;
+  slab.receiveShadow = true;
+  slab.castShadow = true;
+  boardGroup.add(slab);
+  const trim = new THREE.Mesh(new THREE.BoxGeometry(cols + 0.9, 0.06, rows + 0.9), mat(0x3a4258, { roughness: 0.8 }));
+  trim.position.y = -0.03;
+  trim.receiveShadow = true;
+  boardGroup.add(trim);
+
+  // Count tiles
+  let grassCount = 0, pathCount = 0;
+  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) (map.isPath(c, r) ? pathCount++ : grassCount++);
+
+  const grassGeo = new THREE.BoxGeometry(0.95, TILE_H, 0.95);
+  const pathGeo = new THREE.BoxGeometry(1.0, PATH_H, 1.0);
+  const grass = new THREE.InstancedMesh(grassGeo, mat(0xffffff, { roughness: 0.92 }), grassCount);
+  const path = new THREE.InstancedMesh(pathGeo, mat(0xffffff, { roughness: 0.97 }), pathCount);
+  grass.receiveShadow = true;
+  path.receiveShadow = true;
+  const m4 = new THREE.Matrix4();
+  const col = new THREE.Color();
+  let gi = 0, pi = 0;
+  const rand = mulberry32(7);
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const p = map.toWorld(c, r);
+      if (map.isPath(c, r)) {
+        m4.makeTranslation(p.x, PATH_H / 2, p.z);
+        path.setMatrixAt(pi, m4);
+        col.setHSL(0.085, 0.3, 0.36 + (rand() - 0.5) * 0.04);
+        path.setColorAt(pi++, col);
+      } else {
+        m4.makeTranslation(p.x, TILE_H / 2, p.z);
+        grass.setMatrixAt(gi, m4);
+        const checker = (c + r) % 2 === 0 ? 0.015 : -0.015;
+        col.setHSL(0.29 + (rand() - 0.5) * 0.03, 0.45, 0.2 + checker + (rand() - 0.5) * 0.035);
+        grass.setColorAt(gi++, col);
+      }
+    }
+  }
+  grass.instanceColor.needsUpdate = true;
+  path.instanceColor.needsUpdate = true;
+  boardGroup.add(grass, path);
+
+  // Crystal
+  const cg = new THREE.Group();
+  const cp = map.toWorld(map.crystalTile.c, map.crystalTile.r, PATH_H);
+  cg.position.copy(cp);
+  const ped = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.44, 0.22, 8), mat(0x7b8296, { roughness: 0.85 }));
+  ped.position.y = 0.11;
+  const cmat = new THREE.MeshStandardMaterial({ color: 0x9be9ff, emissive: 0x2bb8ff, emissiveIntensity: 1.3, roughness: 0.12, metalness: 0.15, flatShading: true });
+  const cmesh = new THREE.Mesh(new THREE.OctahedronGeometry(0.3, 0), cmat);
+  cmesh.scale.set(1, 1.6, 1);
+  cmesh.position.y = 0.78;
+  const halo = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.02, 6, 40), new THREE.MeshBasicMaterial({ color: 0x8fe3ff, transparent: true, opacity: 0.7 }));
+  halo.rotation.x = Math.PI / 2;
+  halo.position.y = 0.4;
+  const pool = new THREE.Mesh(new THREE.CircleGeometry(1.1, 32), new THREE.MeshBasicMaterial({ map: dotTex, color: 0x3fc6ff, transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending, depthWrite: false }));
+  pool.rotation.x = -Math.PI / 2;
+  pool.position.y = 0.01;
+  const light = new THREE.PointLight(0x6fd6ff, 7, 6, 1.6);
+  light.position.y = 0.9;
+  shadowed(ped);
+  cmesh.castShadow = true;
+  cg.add(ped, cmesh, halo, pool, light);
+  boardGroup.add(cg);
+  crystal = { group: cg, mesh: cmesh, mat: cmat, light, halo, hurt: 0 };
+
+  // Spawn portal (first waypoint, just off the board)
+  const pg = new THREE.Group();
+  pg.position.copy(map.points[0]);
+  const ringMat = new THREE.MeshStandardMaterial({ color: 0xc58bff, emissive: 0x9a4dff, emissiveIntensity: 1.6, roughness: 0.3 });
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.06, 8, 36), ringMat);
+  ring.rotation.y = Math.PI / 2;
+  ring.position.y = 0.5;
+  const swirl = new THREE.Mesh(new THREE.CircleGeometry(0.38, 32), new THREE.MeshBasicMaterial({ map: dotTex, color: 0xb070ff, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }));
+  swirl.rotation.y = Math.PI / 2;
+  swirl.position.y = 0.5;
+  const plinth = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.12, 1.0), mat(0x3a4258));
+  plinth.position.y = 0.06;
+  const plight = new THREE.PointLight(0xa86bff, 3, 4, 1.8);
+  plight.position.set(0.3, 0.6, 0);
+  shadowed(ring);
+  plinth.receiveShadow = true;
+  pg.add(ring, swirl, plinth, plight);
+  boardGroup.add(pg);
+  portal = { group: pg, ring, swirl, light: plight };
+
+  buildFireflies();
+}
+
+/* Seeded random so the board looks the same every visit */
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+let fireflies = null;
+function buildFireflies() {
+  const N = 46;
+  const pos = new Float32Array(N * 3);
+  const colr = new Float32Array(N * 3);
+  const seeds = [];
+  const rand = mulberry32(99);
+  const c1 = new THREE.Color(0xffe9a8), c2 = new THREE.Color(0x8fe3ff);
+  for (let i = 0; i < N; i++) {
+    const s = { x: (rand() - 0.5) * (map.cols + 1), z: (rand() - 0.5) * (map.rows + 1), y: 0.5 + rand() * 1.3, p: rand() * 10, sp: 0.3 + rand() * 0.5 };
+    seeds.push(s);
+    const cc = rand() < 0.6 ? c1 : c2;
+    colr.set([cc.r, cc.g, cc.b], i * 3);
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  geo.setAttribute('color', new THREE.BufferAttribute(colr, 3));
+  const pts = new THREE.Points(geo, new THREE.PointsMaterial({ size: 0.12, map: dotTex, vertexColors: true, transparent: true, opacity: 0.8, depthWrite: false, blending: THREE.AdditiveBlending }));
+  boardGroup.add(pts);
+  fireflies = { pts, seeds, pos };
+}
+
+/* =====================================================================
+   EFFECTS — pooled additive particles
+   ===================================================================== */
+const Particles = (() => {
+  const MAX = 700;
+  const pos = new Float32Array(MAX * 3).fill(-999);
+  const colr = new Float32Array(MAX * 3);
+  const vel = new Float32Array(MAX * 3);
+  const life = new Float32Array(MAX);
+  const maxLife = new Float32Array(MAX);
+  const base = new Float32Array(MAX * 3);
+  const grav = new Float32Array(MAX);
+  let cursor = 0;
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  geo.setAttribute('color', new THREE.BufferAttribute(colr, 3));
+  const points = new THREE.Points(geo, new THREE.PointsMaterial({ size: 0.16, map: dotTex, vertexColors: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
+  points.frustumCulled = false;
+  scene.add(points);
+  const tmp = new THREE.Color();
+  return {
+    burst(at, { count = 12, color = 0xffffff, speed = 2, up = 1.5, lifeTime = 0.6, gravity = 6, spread = 1 } = {}) {
+      tmp.set(color);
+      for (let n = 0; n < count; n++) {
+        const i = cursor; cursor = (cursor + 1) % MAX;
+        const a = Math.random() * Math.PI * 2;
+        const s = speed * (0.35 + Math.random() * 0.65);
+        pos[i * 3] = at.x + (Math.random() - 0.5) * 0.1 * spread;
+        pos[i * 3 + 1] = at.y + (Math.random() - 0.5) * 0.1 * spread;
+        pos[i * 3 + 2] = at.z + (Math.random() - 0.5) * 0.1 * spread;
+        vel[i * 3] = Math.cos(a) * s;
+        vel[i * 3 + 1] = up * (0.4 + Math.random() * 0.8);
+        vel[i * 3 + 2] = Math.sin(a) * s;
+        maxLife[i] = life[i] = lifeTime * (0.6 + Math.random() * 0.6);
+        grav[i] = gravity;
+        base[i * 3] = tmp.r; base[i * 3 + 1] = tmp.g; base[i * 3 + 2] = tmp.b;
+      }
+    },
+    update(dt) {
+      for (let i = 0; i < MAX; i++) {
+        if (life[i] <= 0) continue;
+        life[i] -= dt;
+        if (life[i] <= 0) { pos[i * 3 + 1] = -999; colr[i * 3] = colr[i * 3 + 1] = colr[i * 3 + 2] = 0; continue; }
+        vel[i * 3 + 1] -= grav[i] * dt;
+        pos[i * 3] += vel[i * 3] * dt;
+        pos[i * 3 + 1] += vel[i * 3 + 1] * dt;
+        pos[i * 3 + 2] += vel[i * 3 + 2] * dt;
+        if (pos[i * 3 + 1] < 0.02) { pos[i * 3 + 1] = 0.02; vel[i * 3 + 1] *= -0.3; vel[i * 3] *= 0.7; vel[i * 3 + 2] *= 0.7; }
+        const k = life[i] / maxLife[i];
+        colr[i * 3] = base[i * 3] * k; colr[i * 3 + 1] = base[i * 3 + 1] * k; colr[i * 3 + 2] = base[i * 3 + 2] * k;
+      }
+      geo.attributes.position.needsUpdate = true;
+      geo.attributes.color.needsUpdate = true;
+    },
+    clear() { life.fill(0); for (let i = 0; i < MAX; i++) pos[i * 3 + 1] = -999; colr.fill(0); },
+  };
+})();
+
+/* Floating text (+5 coins, -1 life) drawn as HTML over the scene */
+const Floaters = (() => {
+  const layer = document.getElementById('floaters');
+  const list = [];
+  const v = new THREE.Vector3();
+  return {
+    add(text, at, cls) {
+      const el = document.createElement('div');
+      el.className = 'floater ' + (cls || '');
+      el.textContent = text;
+      layer.appendChild(el);
+      list.push({ el, pos: at.clone(), t: 0, life: 0.95 });
+    },
+    update(dt) {
+      for (let i = list.length - 1; i >= 0; i--) {
+        const f = list[i];
+        f.t += dt;
+        f.pos.y += dt * 0.9;
+        const k = f.t / f.life;
+        if (k >= 1) { f.el.remove(); list.splice(i, 1); continue; }
+        v.copy(f.pos).project(camera);
+        const x = (v.x * 0.5 + 0.5) * innerWidth, y = (-v.y * 0.5 + 0.5) * innerHeight;
+        const sc = k < 0.15 ? 0.7 + k * 2 : 1;
+        f.el.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%) scale(${sc})`;
+        f.el.style.opacity = String(k > 0.6 ? 1 - (k - 0.6) / 0.4 : 1);
+      }
+    },
+    clear() { list.forEach((f) => f.el.remove()); list.length = 0; },
+  };
+})();
+
+const toastEl = document.getElementById('toast');
+let toastTimer = 0;
+function toast(msg, kind = '', ms = 1500) {
+  toastEl.textContent = msg;
+  toastEl.className = 'glass show ' + kind;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => (toastEl.className = 'glass ' + kind), ms);
+}
+
+/* =====================================================================
+   GAME STATE
+   ===================================================================== */
+const SIM_DT = 1 / 60;
+let nextId = 1;
+const state = {
+  phase: 'title',   // title | ready | wave | won | lost
+  paused: false,
+  speed: Save.data.settings.speed === 2 ? 2 : 1,
+  time: 0,
+  lives: 0,
+  coins: 0,
+  waveIndex: 0,     // number of waves started
+  spawners: [],
+  enemies: [],
+  towers: [],
+  projectiles: [],
+  stats: { kills: 0, earned: 0, leaked: 0 },
+  endTimer: 0,
+};
+
+const tmpV = new THREE.Vector3();
+
+function resetGame() {
+  for (const e of state.enemies) removeEnemyMesh(e);
+  for (const t of state.towers) scene.remove(t.mesh);
+  for (const p of state.projectiles) releaseProjectileMesh(p.mesh);
+  state.enemies = [];
+  state.towers = [];
+  state.projectiles = [];
+  state.spawners = [];
+  state.time = 0;
+  state.waveIndex = 0;
+  state.lives = map.def.startLives;
+  state.coins = map.def.startCoins;
+  state.stats = { kills: 0, earned: 0, leaked: 0 };
+  state.endTimer = 0;
+  state.paused = false;
+  Particles.clear();
+  Floaters.clear();
+  cancelBuild();
+  deselect();
+  if (crystal) { crystal.hurt = 0; crystal.group.scale.setScalar(1); }
+  updateHud(true);
+}
+
+/* ---------- Waves ---------- */
+function startWave() {
+  if (state.phase !== 'ready') return;
+  const wave = map.def.waves[state.waveIndex];
+  if (!wave) return;
+  state.spawners = wave.groups.map((g) => ({ enemy: g.enemy, remaining: g.count, interval: g.interval, timer: g.delay || 0 }));
+  state.waveIndex++;
+  state.phase = 'wave';
+  toast(`Wave ${state.waveIndex} incoming!`, 'big', 1400);
+  Events.emit('waveStart', { index: state.waveIndex });
+  updateHud();
+}
+
+function spawnEnemy(key) {
+  const def = CONTENT.enemies[key];
+  const bodyMat = mat(def.color, { roughness: 0.65 });
+  const mesh = MODELS.enemies[def.model](def, bodyMat);
+  const hb = makeHealthBar();
+  mesh.add(hb.group);
+  scene.add(mesh);
+  const e = {
+    id: nextId++, key, def, hp: def.health, maxHp: def.health, dist: 0, alive: true,
+    pos: new THREE.Vector3(), prev: new THREE.Vector3(), yaw: 0,
+    mesh, bodyMat, hb, flash: 0, anim: Math.random() * 6, spawnT: 0,
+  };
+  e.yaw = samplePath(map, 0, e.pos);
+  e.prev.copy(e.pos);
+  mesh.position.copy(e.pos);
+  mesh.rotation.y = e.yaw;
+  state.enemies.push(e);
+  Particles.burst(tmpV.copy(e.pos).setY(0.5), { count: 10, color: 0xb070ff, speed: 1.2, up: 1, lifeTime: 0.5, gravity: 2 });
+  Events.emit('enemySpawn', { enemy: e });
+}
+
+function removeEnemyMesh(e) {
+  scene.remove(e.mesh);
+  e.bodyMat.dispose();
+  e.hb.group.traverse((o) => { if (o.isMesh) { o.geometry.dispose(); o.material.dispose(); } });
+}
+
+function makeHealthBar() {
+  const group = new THREE.Group();
+  group.position.y = 0.82;
+  const bg = new THREE.Mesh(new THREE.PlaneGeometry(0.52, 0.085), new THREE.MeshBasicMaterial({ color: 0x0a0d18, transparent: true, opacity: 0.75, depthTest: false }));
+  const fillGeo = new THREE.PlaneGeometry(0.48, 0.05);
+  fillGeo.translate(0.24, 0, 0);
+  const fillMat = new THREE.MeshBasicMaterial({ color: 0x6dff9e, depthTest: false, transparent: true });
+  const fill = new THREE.Mesh(fillGeo, fillMat);
+  fill.position.set(-0.24, 0, 0.001);
+  bg.renderOrder = 20; fill.renderOrder = 21;
+  group.add(bg, fill);
+  group.visible = false;
+  return { group, fill, fillMat };
+}
+
+/* ---------- Damage ---------- */
+function damageEnemy(e, amount, type, sourceTower) {
+  if (!e.alive) return;
+  const mult = e.def.resist && e.def.resist[type] != null ? e.def.resist[type] : 1;
+  const dmg = Math.max(1, amount * mult - (e.def.armor || 0));
+  e.hp -= dmg;
+  e.flash = 1;
+  Events.emit('enemyHit', { enemy: e, damage: dmg, type });
+  if (e.hp <= 0) killEnemy(e, sourceTower);
+}
+
+function killEnemy(e, sourceTower) {
+  e.alive = false;
+  state.coins += e.def.reward;
+  state.stats.kills++;
+  state.stats.earned += e.def.reward;
+  if (sourceTower) sourceTower.kills++;
+  const at = tmpV.copy(e.pos).setY(0.35);
+  Particles.burst(at, { count: 16, color: e.def.color, speed: 2.2, up: 2.2, lifeTime: 0.55 });
+  Particles.burst(at, { count: 6, color: 0xffcf5a, speed: 1, up: 2.6, lifeTime: 0.7, gravity: 4 });
+  Floaters.add('+' + e.def.reward, at.clone().setY(0.8), 'gold');
+  bumpPill('coins-pill');
+  Events.emit('enemyKilled', { enemy: e });
+}
+
+function leak(e) {
+  e.alive = false;
+  state.lives = Math.max(0, state.lives - e.def.livesCost);
+  state.stats.leaked++;
+  crystal.hurt = 1;
+  camShake = Math.min(1, camShake + 0.55);
+  const at = crystal.group.position.clone().setY(0.8);
+  Particles.burst(at, { count: 20, color: 0xff5a6a, speed: 2.4, up: 2, lifeTime: 0.6 });
+  Floaters.add('-' + e.def.livesCost, at.clone().setY(1.3), 'red');
+  const pill = document.getElementById('lives-pill');
+  pill.classList.remove('hurt'); void pill.offsetWidth; pill.classList.add('hurt');
+  Events.emit('lifeLost', { enemy: e, lives: state.lives });
+}
+
+/* ---------- Towers ---------- */
+function canBuildAt(c, r, key) {
+  const def = CONTENT.towers[key];
+  if (!map.inside(c, r)) return { ok: false, why: 'Off the board' };
+  if (map.isPath(c, r)) return { ok: false, why: "Can't build on the path" };
+  if (towerAt(c, r)) return { ok: false, why: 'Tile already taken' };
+  if (state.coins < def.cost) return { ok: false, why: `Need ${def.cost - state.coins} more coins` };
+  return { ok: true };
+}
+function towerAt(c, r) { return state.towers.find((t) => t.c === c && t.r === r) || null; }
+
+function buildTower(c, r, key) {
+  const def = CONTENT.towers[key];
+  const mesh = MODELS.towers[def.model](def);
+  const pos = map.toWorld(c, r, TILE_H);
+  mesh.position.copy(pos);
+  mesh.scale.setScalar(0.01);
+  scene.add(mesh);
+  const t = { id: nextId++, key, def, c, r, pos, mesh, cooldown: 0.25, targetId: 0, kills: 0, spent: def.cost, yaw: 0, recoil: 0, popT: 0 };
+  mesh.userData.towerId = t.id;
+  state.towers.push(t);
+  state.coins -= def.cost;
+  Particles.burst(tmpV.copy(pos).setY(TILE_H + 0.05), { count: 18, color: 0xd8c9a8, speed: 1.6, up: 1.2, lifeTime: 0.5, gravity: 5 });
+  Particles.burst(tmpV.copy(pos).setY(0.5), { count: 10, color: def.color, speed: 0.8, up: 2.2, lifeTime: 0.7, gravity: 1 });
+  Events.emit('towerBuilt', { tower: t });
+  updateHud();
+  return t;
+}
+
+function sellTower(t) {
+  const refund = Math.floor(t.spent * t.def.sellRefund);
+  state.coins += refund;
+  scene.remove(t.mesh);
+  state.towers = state.towers.filter((x) => x !== t);
+  const at = t.pos.clone().setY(0.5);
+  Particles.burst(at, { count: 18, color: 0xffcf5a, speed: 1.8, up: 2, lifeTime: 0.6 });
+  Floaters.add('+' + refund, at.clone().setY(1.1), 'gold');
+  bumpPill('coins-pill');
+  Events.emit('towerSold', { tower: t, refund });
+  deselect();
+  updateHud();
+}
+
+function findTarget(t) {
+  const r2 = t.def.range * t.def.range;
+  let best = null;
+  for (const e of state.enemies) {
+    if (!e.alive) continue;
+    const dx = e.pos.x - t.pos.x, dz = e.pos.z - t.pos.z;
+    if (dx * dx + dz * dz > r2) continue;
+    if (!best || e.dist > best.dist) best = e;   // 'first' targeting
+  }
+  return best;
+}
+
+/* ---------- Projectiles (meshes are pooled) ---------- */
+const projectilePool = [];
+const arrowGeo = new THREE.CylinderGeometry(0.018, 0.018, 0.36, 5).rotateX(Math.PI / 2);
+const tipGeo = new THREE.ConeGeometry(0.045, 0.11, 6).rotateX(Math.PI / 2).translate(0, 0, 0.22);
+function getProjectileMesh(color) {
+  let m = projectilePool.pop();
+  if (!m) {
+    m = new THREE.Group();
+    const shaftMat = new THREE.MeshBasicMaterial({ color: 0xf2e6c9 });
+    const tipMat = new THREE.MeshBasicMaterial({ color });
+    const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: dotTex, color, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
+    glow.scale.setScalar(0.42);
+    glow.position.z = 0.18;
+    m.add(new THREE.Mesh(arrowGeo, shaftMat), new THREE.Mesh(tipGeo, tipMat), glow);
+    m.userData = { tipMat, glow };
+  }
+  m.userData.tipMat.color.set(color);
+  m.userData.glow.material.color.set(color);
+  m.visible = true;
+  scene.add(m);
+  return m;
+}
+function releaseProjectileMesh(m) { scene.remove(m); projectilePool.push(m); }
+
+function fire(t, target) {
+  const muzzle = new THREE.Vector3(t.pos.x, t.pos.y + t.mesh.userData.muzzleY, t.pos.z);
+  const p = {
+    tower: t, targetId: target.id, target, damage: t.def.damage, type: t.def.damageType, speed: t.def.projectileSpeed,
+    pos: muzzle.clone(), prev: muzzle.clone(), aim: target.pos.clone().setY(target.pos.y + target.def.hitHeight),
+    mesh: getProjectileMesh(t.def.color), age: 0,
+  };
+  p.mesh.position.copy(p.pos);
+  p.mesh.lookAt(p.aim);
+  state.projectiles.push(p);
+  t.recoil = 1;
+  Events.emit('towerFire', { tower: t });
+}
+
+/* =====================================================================
+   SIMULATION STEP (fixed timestep)
+   ===================================================================== */
+function step(dt) {
+  state.time += dt;
+
+  // Spawning
+  if (state.phase === 'wave') {
+    for (const s of state.spawners) {
+      if (s.remaining <= 0) continue;
+      s.timer -= dt;
+      if (s.timer <= 0) { spawnEnemy(s.enemy); s.remaining--; s.timer += s.interval; }
+    }
+  }
+
+  // Enemies walk the path
+  for (const e of state.enemies) {
+    if (!e.alive) continue;
+    e.prev.copy(e.pos);
+    e.dist += e.def.speed * dt;
+    e.yaw = samplePath(map, e.dist, e.pos);
+    if (e.dist >= map.total) leak(e);
+  }
+
+  // Towers aim and fire
+  for (const t of state.towers) {
+    t.cooldown -= dt;
+    const target = findTarget(t);
+    t.targetId = target ? target.id : 0;
+    if (target) {
+      t.yaw = Math.atan2(target.pos.x - t.pos.x, target.pos.z - t.pos.z);
+      if (t.cooldown <= 0) { fire(t, target); t.cooldown = 1 / t.def.fireRate; }
+    } else if (t.cooldown < 0) {
+      t.cooldown = 0;
+    }
+  }
+
+  // Projectiles home in on their target
+  for (const p of state.projectiles) {
+    p.prev.copy(p.pos);
+    p.age += dt;
+    if (p.target.alive) p.aim.set(p.target.pos.x, p.target.pos.y + p.target.def.hitHeight, p.target.pos.z);
+    const toAim = tmpV.subVectors(p.aim, p.pos);
+    const d = toAim.length();
+    const move = p.speed * dt;
+    if (d <= move + 0.05) {
+      p.pos.copy(p.aim);
+      p.done = true;
+      if (p.target.alive) damageEnemy(p.target, p.damage, p.type, p.tower);
+      Particles.burst(p.pos, { count: 6, color: p.tower.def.color, speed: 1.4, up: 1, lifeTime: 0.3, gravity: 3 });
+    } else {
+      p.pos.addScaledVector(toAim, move / d);
+    }
+    if (p.age > 4) p.done = true;
+  }
+
+  // Clean up
+  state.enemies = state.enemies.filter((e) => {
+    if (!e.alive) { removeEnemyMesh(e); return false; }
+    return true;
+  });
+  state.projectiles = state.projectiles.filter((p) => {
+    if (p.done) { releaseProjectileMesh(p.mesh); return false; }
+    return true;
+  });
+
+  // Win / lose
+  if (state.phase === 'wave') {
+    if (state.lives <= 0) {
+      state.phase = 'lost';
+      state.endTimer = 0.9;
+      Events.emit('defeat', {});
+    } else {
+      const spawningDone = state.spawners.every((s) => s.remaining <= 0);
+      if (spawningDone && state.enemies.length === 0) {
+        if (state.waveIndex >= map.def.waves.length) {
+          state.phase = 'won';
+          state.endTimer = 1.0;
+          Events.emit('victory', {});
+        } else {
+          state.phase = 'ready';
+          toast(`Wave ${state.waveIndex} cleared`, 'big');
+          Events.emit('waveClear', { index: state.waveIndex });
+        }
+      }
+    }
+  }
+}
+
+/* =====================================================================
+   INPUT — one pointer path for mouse and touch
+   ===================================================================== */
+const raycaster = new THREE.Raycaster();
+const ndc = new THREE.Vector2();
+const groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -TILE_H);
+let buildKey = null;            // tower type in build mode
+let preview = null;             // { c, r } tile shown with ghost
+let hoverTile = null;           // mouse hover tile
+let selected = null;            // selected tower
+
+function setNdc(e) {
+  const rect = canvas.getBoundingClientRect();
+  ndc.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+  ndc.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+  raycaster.setFromCamera(ndc, camera);
+}
+function tileFromEvent(e) {
+  setNdc(e);
+  const hit = new THREE.Vector3();
+  if (!raycaster.ray.intersectPlane(groundPlane, hit)) return null;
+  const c = Math.floor(hit.x + map.cols / 2), r = Math.floor(hit.z + map.rows / 2);
+  return { c, r, inside: map.inside(c, r) };
+}
+function pickTower(e) {
+  setNdc(e);
+  const hits = raycaster.intersectObjects(state.towers.map((t) => t.mesh), true);
+  if (hits.length) {
+    let o = hits[0].object;
+    while (o && o.userData.towerId == null) o = o.parent;
+    if (o) return state.towers.find((t) => t.id === o.userData.towerId) || null;
+  }
+  const tile = tileFromEvent(e);
+  return tile && tile.inside ? towerAt(tile.c, tile.r) : null;
+}
+
+let down = null;
+canvas.addEventListener('pointerdown', (e) => {
+  down = { x: e.clientX, y: e.clientY, type: e.pointerType, button: e.button };
+  canvas.focus({ preventScroll: true });
+});
+canvas.addEventListener('pointermove', (e) => {
+  if (e.pointerType !== 'mouse') return;
+  const tile = tileFromEvent(e);
+  hoverTile = tile && tile.inside ? tile : null;
+  let pointer = false;
+  if (!buildKey && state.towers.length && !isUiBlocked()) pointer = !!pickTower(e);
+  canvas.style.cursor = buildKey ? (hoverTile ? 'crosshair' : 'default') : pointer ? 'pointer' : 'default';
+});
+canvas.addEventListener('pointerleave', () => { hoverTile = null; });
+canvas.addEventListener('pointerup', (e) => {
+  if (!down) return;
+  const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y);
+  const wasRight = down.button === 2;
+  down = null;
+  if (moved > 14 || isUiBlocked()) return;
+  if (wasRight) { cancelBuild(); deselect(); return; }
+  handleTap(e);
+});
+canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+
+function isUiBlocked() { return state.phase === 'title' || state.phase === 'won' || state.phase === 'lost' || state.paused; }
+
+function handleTap(e) {
+  if (buildKey) {
+    const tile = tileFromEvent(e);
+    if (!tile || !tile.inside) { cancelBuild(); return; }
+    const isTouch = e.pointerType !== 'mouse';
+    if (isTouch && !(preview && preview.c === tile.c && preview.r === tile.r)) {
+      preview = { c: tile.c, r: tile.r };   // first tap: preview only
+      return;
+    }
+    tryBuild(tile.c, tile.r);
+    return;
+  }
+  const t = pickTower(e);
+  if (t) selectTower(t); else deselect();
+}
+
+function tryBuild(c, r) {
+  const check = canBuildAt(c, r, buildKey);
+  if (!check.ok) {
+    toast(check.why, 'warn');
+    highlightFlash = 1;
+    return;
+  }
+  buildTower(c, r, buildKey);
+  preview = null;
+  if (state.coins < CONTENT.towers[buildKey].cost) cancelBuild();
+}
+
+function enterBuild(key) {
+  if (isUiBlocked()) return;
+  if (buildKey === key) { cancelBuild(); return; }
+  deselect();
+  buildKey = key;
+  preview = null;
+  const def = CONTENT.towers[key];
+  if (state.coins < def.cost) toast(`Need ${def.cost - state.coins} more coins`, 'warn');
+  setGhost(key);
+  renderCards();
+}
+function cancelBuild() {
+  buildKey = null;
+  preview = null;
+  setGhost(null);
+  renderCards();
+}
+
+function selectTower(t) {
+  selected = t;
+  renderInfo();
+}
+function deselect() {
+  selected = null;
+  renderInfo();
+}
+
+window.addEventListener('keydown', (e) => {
+  if (e.repeat) return;
+  const k = e.key.toLowerCase();
+  if (k === ' ') { e.preventDefault(); togglePause(); return; }
+  if (isUiBlocked()) return;
+  if (k === 'escape') { cancelBuild(); deselect(); }
+  else if (k === 'f') toggleSpeed();
+  else if (k === 'enter') startWave();
+  else if (k === 's' && selected) sellTower(selected);
+  else {
+    for (const key of map.def.towers) if (CONTENT.towers[key].hotkey === k) enterBuild(key);
+  }
+});
+
+/* =====================================================================
+   HELPERS IN THE SCENE — tile highlight, range ring, build ghost
+   ===================================================================== */
+const highlight = new THREE.Mesh(new THREE.PlaneGeometry(0.96, 0.96), new THREE.MeshBasicMaterial({ color: 0x6dff9e, transparent: true, opacity: 0.35, depthWrite: false }));
+highlight.rotation.x = -Math.PI / 2;
+highlight.visible = false;
+highlight.renderOrder = 5;
+scene.add(highlight);
+let highlightFlash = 0;
+
+function makeRangeIndicator() {
+  const g = new THREE.Group();
+  const ringMat = new THREE.MeshBasicMaterial({ color: 0x8fe3ff, transparent: true, opacity: 0.85, depthWrite: false });
+  const discMat = new THREE.MeshBasicMaterial({ color: 0x8fe3ff, transparent: true, opacity: 0.1, depthWrite: false });
+  const ring = new THREE.Mesh(new THREE.RingGeometry(0.96, 1, 72), ringMat);
+  const disc = new THREE.Mesh(new THREE.CircleGeometry(1, 72), discMat);
+  ring.rotation.x = disc.rotation.x = -Math.PI / 2;
+  ring.renderOrder = disc.renderOrder = 6;
+  g.add(disc, ring);
+  g.visible = false;
+  g.userData = { ring, ringMat, discMat, radius: 0 };
+  scene.add(g);
+  return g;
+}
+const rangeIndicator = makeRangeIndicator();
+function showRange(at, radius, color) {
+  const u = rangeIndicator.userData;
+  if (u.radius !== radius) {
+    u.ring.geometry.dispose();
+    u.ring.geometry = new THREE.RingGeometry(1 - 0.045 / radius, 1, 72);
+    u.radius = radius;
+  }
+  rangeIndicator.scale.set(radius, 1, radius);
+  rangeIndicator.position.set(at.x, TILE_H + 0.012, at.z);
+  u.ringMat.color.set(color);
+  u.discMat.color.set(color);
+  rangeIndicator.visible = true;
+}
+
+let ghost = null;
+const ghostCache = {};
+function setGhost(key) {
+  if (ghost) { scene.remove(ghost); ghost = null; }
+  if (!key) return;
+  if (!ghostCache[key]) {
+    const def = CONTENT.towers[key];
+    const g = MODELS.towers[def.model](def);
+    g.traverse((o) => {
+      if (o.isMesh) {
+        o.castShadow = false;
+        o.material = o.material.clone();
+        o.material.transparent = true;
+        o.material.opacity = 0.55;
+        o.material.depthWrite = false;
+      }
+    });
+    ghostCache[key] = g;
+  }
+  ghost = ghostCache[key];
+  ghost.visible = false;
+  scene.add(ghost);
+}
+
+const placeHint = document.getElementById('place-hint');
+
+function updateHelpers(dt, t) {
+  highlightFlash = Math.max(0, highlightFlash - dt * 3);
+  let showTile = null;
+  if (buildKey) showTile = preview || hoverTile;
+  if (showTile && !isUiBlocked()) {
+    const p = map.toWorld(showTile.c, showTile.r);
+    const check = canBuildAt(showTile.c, showTile.r, buildKey);
+    const y = map.isPath(showTile.c, showTile.r) ? PATH_H : TILE_H;
+    highlight.position.set(p.x, y + 0.01, p.z);
+    highlight.material.color.set(check.ok ? 0x6dff9e : 0xff5a6a);
+    highlight.material.opacity = 0.28 + Math.sin(t * 6) * 0.08 + highlightFlash * 0.4;
+    highlight.visible = true;
+    const def = CONTENT.towers[buildKey];
+    const occupied = towerAt(showTile.c, showTile.r);
+    if (ghost) {
+      ghost.visible = !occupied && !map.isPath(showTile.c, showTile.r);
+      ghost.position.set(p.x, TILE_H, p.z);
+      ghost.userData.head.rotation.y = t * 0.8;
+    }
+    showRange(p, def.range, check.ok ? 0x8fe3ff : 0xff6b7a);
+    // Touch: label telling the player to tap again
+    if (preview) {
+      const v = tmpV.set(p.x, TILE_H + 1.25, p.z).project(camera);
+      placeHint.hidden = false;
+      placeHint.className = check.ok ? '' : 'bad';
+      placeHint.textContent = check.ok ? `Tap again to build · ${def.cost}` : check.why;
+      placeHint.style.transform = `translate(${(v.x * 0.5 + 0.5) * innerWidth}px, ${(-v.y * 0.5 + 0.5) * innerHeight}px) translate(-50%, -100%)`;
+    } else placeHint.hidden = true;
+  } else {
+    highlight.visible = false;
+    if (ghost) ghost.visible = false;
+    placeHint.hidden = true;
+    if (selected) showRange(selected.pos, selected.def.range, 0x8fe3ff);
+    else rangeIndicator.visible = false;
+  }
+}
+
+/* =====================================================================
+   HUD
+   ===================================================================== */
+const $ = (id) => document.getElementById(id);
+const coinSvg = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="#f5b730"/><circle cx="12" cy="12" r="6.2" fill="none" stroke="#ffe08a" stroke-width="1.6"/></svg>';
+const towerIcons = {
+  arcaneArcher: '<svg viewBox="0 0 32 32"><path d="M8 4c9 3 13 11 12 24" stroke="#c99560" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M8 4 20 28" stroke="#e8ecff" stroke-width="1" opacity=".7"/><path d="M4 23 26 9" stroke="#8fc8ff" stroke-width="2.4" stroke-linecap="round"/><path d="M26 9l-5 .6 2.4 3.4z" fill="#8fc8ff"/></svg>',
+};
+let lastHud = {};
+
+function bumpPill(id) {
+  const el = $(id);
+  el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump');
+}
+
+function updateHud(force) {
+  const waves = map.def.waves.length;
+  const h = { lives: state.lives, coins: state.coins, wave: `${state.waveIndex}/${waves}`, phase: state.phase, speed: state.speed, paused: state.paused };
+  if (force || h.lives !== lastHud.lives) $('lives').textContent = h.lives;
+  if (force || h.coins !== lastHud.coins) { $('coins').textContent = h.coins; renderCards(); }
+  if (force || h.wave !== lastHud.wave) $('wave').textContent = h.wave;
+  if (force || h.speed !== lastHud.speed) { $('speed-btn').textContent = h.speed + '×'; $('speed-btn').classList.toggle('on', h.speed > 1); }
+  if (force || h.phase !== lastHud.phase) {
+    const btn = $('start-wave');
+    const next = map.def.waves[state.waveIndex];
+    btn.disabled = state.phase !== 'ready' || !next;
+    if (state.phase === 'wave') { $('start-wave-label').textContent = 'Wave running'; $('start-wave-sub').textContent = 'Defend the crystal'; }
+    else if (next) {
+      $('start-wave-label').textContent = state.waveIndex === 0 ? 'Start wave' : 'Next wave';
+      $('start-wave-sub').textContent = next.groups.map((g) => `${g.count} ${CONTENT.enemies[g.enemy].name}s`).join(' · ');
+    }
+  }
+  if (selected && (force || h.coins !== lastHud.coins)) renderInfo();
+  lastHud = h;
+}
+
+function renderCards() {
+  const wrap = $('tower-cards');
+  if (!wrap.children.length) {
+    for (const key of map.def.towers) {
+      const def = CONTENT.towers[key];
+      const b = document.createElement('button');
+      b.className = 'tower-card';
+      b.dataset.key = key;
+      b.title = `${def.name}: ${def.role}`;
+      const hex = '#' + def.color.toString(16).padStart(6, '0');
+      b.innerHTML = `<div class="ico" style="background:radial-gradient(circle at 50% 40%, ${hex}33, ${hex}0d); box-shadow: 0 0 0 1px ${hex}55 inset">${towerIcons[key] || ''}</div>
+        <div><div class="nm">${def.name}</div><div class="cost">${coinSvg}<span>${def.cost}</span></div></div>
+        <span class="key">${def.hotkey}</span>`;
+      b.addEventListener('click', () => enterBuild(key));
+      wrap.appendChild(b);
+    }
+  }
+  for (const b of wrap.children) {
+    const def = CONTENT.towers[b.dataset.key];
+    b.classList.toggle('active', buildKey === b.dataset.key);
+    b.classList.toggle('poor', state.coins < def.cost);
+  }
+}
+
+function renderInfo() {
+  const el = $('tower-info');
+  if (!selected) { el.hidden = true; return; }
+  const t = selected, d = t.def;
+  const refund = Math.floor(t.spent * d.sellRefund);
+  el.innerHTML = `
+    <h3>${d.name}</h3>
+    <div class="role">${d.role}</div>
+    <div class="stat-row"><span>Damage</span><span>${d.damage} ${d.damageType}</span></div>
+    <div class="stat-row"><span>Range</span><span>${d.range} tiles</span></div>
+    <div class="stat-row"><span>Fire rate</span><span>${d.fireRate} / sec</span></div>
+    <div class="stat-row"><span>Kills</span><span>${t.kills}</span></div>
+    <div class="info-actions">
+      <button class="btn danger" id="sell-btn">Sell +${refund}</button>
+      <button class="btn ghost" id="close-info">Close</button>
+    </div>`;
+  el.hidden = false;
+  $('sell-btn').onclick = () => sellTower(t);
+  $('close-info').onclick = () => deselect();
+}
+// Keep kill counts fresh while a tower is selected
+let infoRefresh = 0;
+
+function toggleSpeed() {
+  state.speed = state.speed === 1 ? 2 : 1;
+  Save.data.settings.speed = state.speed;
+  Save.write();
+  updateHud();
+}
+
+function togglePause() {
+  if (state.phase === 'title' || state.phase === 'won' || state.phase === 'lost') return;
+  state.paused = !state.paused;
+  if (state.paused) showPause(); else hideOverlay();
+}
+
+document.addEventListener('click', (e) => { const b = e.target.closest && e.target.closest('button'); if (b) b.blur(); });
+$('speed-btn').addEventListener('click', toggleSpeed);
+$('pause-btn').addEventListener('click', togglePause);
+$('start-wave').addEventListener('click', startWave);
+
+/* ---------- Overlays ---------- */
+const overlay = $('overlay');
+function hideOverlay() { overlay.hidden = true; overlay.innerHTML = ''; }
+
+function showTitle() {
+  const s = Save.data.stats;
+  overlay.innerHTML = `
+    <div class="card">
+      <div class="eyebrow">Phase 1 · Engine test</div>
+      <h1>Arcane &amp; Starlight Defense</h1>
+      <p>Goblins pour from the portal. Stop them before they reach the crystal.</p>
+      <ul>
+        <li><b>Build:</b> pick the Arcane Archer below, then tap a grass tile. On a phone, tap once to preview and again to build.</li>
+        <li><b>Inspect or sell:</b> tap a tower you've built.</li>
+        <li><b>Start:</b> press <b>Start wave</b> when you're ready. Each goblin that gets through costs one life.</li>
+      </ul>
+      <div class="actions"><button class="btn primary" id="play-btn">Play</button></div>
+      <div class="foot">Placeholder shapes until a visual style is picked.${s.runs ? ` · Runs ${s.runs} · Wins ${s.wins}` : ''}<br>Keys: 1 tower · Enter wave · Space pause · F speed · Esc cancel</div>
+    </div>`;
+  overlay.hidden = false;
+  $('play-btn').onclick = () => {
+    hideOverlay();
+    resetGame();
+    state.phase = 'ready';
+    Save.data.stats.runs++;
+    Save.write();
+    updateHud(true);
+    fitCamera();
+    toast('Place a tower, then start the wave', '', 2200);
+  };
+}
+
+function showPause() {
+  overlay.innerHTML = `
+    <div class="card">
+      <div class="eyebrow">Paused</div>
+      <h2>Take a breather</h2>
+      <p>Wave ${state.waveIndex}/${map.def.waves.length} · ${state.lives} lives · ${state.coins} coins</p>
+      <div class="actions">
+        <button class="btn" id="restart-btn">Restart</button>
+        <button class="btn primary" id="resume-btn">Resume</button>
+      </div>
+    </div>`;
+  overlay.hidden = false;
+  $('resume-btn').onclick = togglePause;
+  $('restart-btn').onclick = () => { hideOverlay(); resetGame(); state.phase = 'ready'; Save.data.stats.runs++; Save.write(); updateHud(true); };
+}
+
+function showEnd(won) {
+  const s = state.stats;
+  if (won) {
+    Save.data.stats.wins++;
+    Save.data.stats.bestLives = Math.max(Save.data.stats.bestLives, state.lives);
+    Save.write();
+  }
+  overlay.innerHTML = `
+    <div class="card ${won ? 'win' : 'lose'}">
+      <div class="eyebrow">${won ? 'Victory' : 'Defeat'}</div>
+      <h2>${won ? (state.lives === map.def.startLives ? 'Flawless defense!' : state.lives <= 5 ? 'Held by a thread!' : 'The crystal holds!') : 'The crystal has fallen'}</h2>
+      <p>${won ? `You cleared the wave with ${state.lives} of ${map.def.startLives} lives left.` : 'Too many goblins slipped through. Try more towers near the corners, where the path passes twice.'}</p>
+      <div class="stats">
+        <div class="stat"><b>${state.lives}</b><span>Lives</span></div>
+        <div class="stat"><b>${s.kills}</b><span>Kills</span></div>
+        <div class="stat"><b>${s.earned}</b><span>Coins won</span></div>
+      </div>
+      <div class="actions"><button class="btn primary" id="again-btn">Play again</button></div>
+      <div class="foot">Best: ${Save.data.stats.bestLives} lives · Wins ${Save.data.stats.wins} of ${Save.data.stats.runs} runs</div>
+    </div>`;
+  overlay.hidden = false;
+  $('again-btn').onclick = () => { hideOverlay(); resetGame(); state.phase = 'ready'; Save.data.stats.runs++; Save.write(); updateHud(true); };
+}
+
+/* =====================================================================
+   CAMERA FIT — keep the whole board visible between the HUD bars
+   ===================================================================== */
+function fitCamera() {
+  const W = innerWidth, H = innerHeight;
+  renderer.setSize(W, H);
+  camera.aspect = W / H;
+  camera.clearViewOffset();
+  const topPx = $('hud').getBoundingClientRect().bottom + 6;
+  const bottomPx = H - $('bottom-bar').getBoundingClientRect().top + 6;
+  const side = 8;
+  const ax0 = -1 + (2 * side) / W, ax1 = 1 - (2 * side) / W;
+  const ay0 = -1 + (2 * bottomPx) / H, ay1 = 1 - (2 * topPx) / H;
+  const hx = map.cols / 2 + 0.45, hz = map.rows / 2 + 0.45;
+  const pts = [];
+  for (const x of [-hx, hx]) for (const z of [-hz, hz]) for (const y of [-0.05, 0.3]) pts.push(new THREE.Vector3(x, y, z));
+  pts.push(map.points[0].clone().setY(1.0));                     // portal top
+  pts.push(crystal.group.position.clone().setY(1.4));            // crystal top
+  const v = new THREE.Vector3();
+  const box = (d) => {
+    camera.position.copy(camTarget).addScaledVector(camDir, d);
+    camera.lookAt(camTarget);
+    camera.updateMatrixWorld();
+    camera.updateProjectionMatrix();
+    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+    for (const p of pts) {
+      v.copy(p).project(camera);
+      x0 = Math.min(x0, v.x); x1 = Math.max(x1, v.x); y0 = Math.min(y0, v.y); y1 = Math.max(y1, v.y);
+    }
+    return { x0, x1, y0, y1 };
+  };
+  let lo = 4, hi = 120;
+  for (let i = 0; i < 28; i++) {
+    const mid = (lo + hi) / 2;
+    const b = box(mid);
+    if (b.x1 - b.x0 <= ax1 - ax0 && b.y1 - b.y0 <= ay1 - ay0) hi = mid; else lo = mid;
+  }
+  const b = box(hi);
+  const cx = (b.x0 + b.x1) / 2, cy = (b.y0 + b.y1) / 2;
+  const tx = (ax0 + ax1) / 2, ty = (ay0 + ay1) / 2;
+  camera.setViewOffset(W, H, ((cx - tx) / 2) * W, (-(cy - ty) / 2) * H, W, H);
+  camera.far = hi * 3 + 20;
+  camera.updateProjectionMatrix();
+  scene.fog.near = hi * 1.1;
+  scene.fog.far = hi * 2.6;
+  camBase.copy(camera.position);
+  $('rotate-hint').hidden = !(H > W && W < 700) || state.phase === 'title';
+}
+window.addEventListener('resize', fitCamera);
+window.addEventListener('orientationchange', () => setTimeout(fitCamera, 200));
+
+/* =====================================================================
+   RENDER LOOP — fixed-step simulation, smooth interpolated drawing
+   ===================================================================== */
+const lerpAngle = (a, b, k) => a + ((((b - a) % (Math.PI * 2)) + Math.PI * 3) % (Math.PI * 2) - Math.PI) * k;
+let acc = 0;
+let last = performance.now();
+let realTime = 0;
+const fpsEl = $('fps');
+const showFps = new URLSearchParams(location.search).has('fps');
+fpsEl.hidden = !showFps;
+let fpsFrames = 0, fpsTime = 0;
+
+function frame(now) {
+  requestAnimationFrame(frame);
+  let dt = (now - last) / 1000;
+  last = now;
+  if (dt > 0.1) dt = 0.1;               // tab was hidden or the frame hitched
+  realTime += dt;
+
+  const running = (state.phase === 'ready' || state.phase === 'wave' || state.phase === 'won' || state.phase === 'lost') && !state.paused;
+  const vdt = running ? dt * state.speed : 0;   // visual time follows the game clock
+
+  if (running) {
+    acc += dt * state.speed;
+    let steps = 0;
+    while (acc >= SIM_DT && steps < 12) { step(SIM_DT); acc -= SIM_DT; steps++; }
+    if (steps === 12) acc = 0;
+  }
+  const alpha = acc / SIM_DT;
+
+  // End screens after a short beat
+  if ((state.phase === 'won' || state.phase === 'lost') && state.endTimer > 0) {
+    state.endTimer -= dt;
+    if (state.endTimer <= 0) showEnd(state.phase === 'won');
+  }
+
+  drawWorld(dt, vdt, alpha);
+  Particles.update(vdt);
+  Floaters.update(vdt);
+  updateHelpers(dt, realTime);
+  updateHud();
+  if (selected && (infoRefresh -= dt) <= 0) { infoRefresh = 0.4; const k = selected.kills; if (k !== selected._shownKills) { selected._shownKills = k; renderInfo(); } }
+
+  // Camera shake
+  camShake = Math.max(0, camShake - dt * 2.2);
+  camera.position.copy(camBase);
+  if (camShake > 0) {
+    const s = camShake * camShake * 0.18;
+    camera.position.x += (Math.random() - 0.5) * s;
+    camera.position.y += (Math.random() - 0.5) * s;
+  }
+
+  renderer.render(scene, camera);
+
+  if (showFps) {
+    fpsFrames++; fpsTime += dt;
+    if (fpsTime >= 0.5) { fpsEl.textContent = Math.round(fpsFrames / fpsTime) + ' fps'; fpsFrames = 0; fpsTime = 0; }
+  }
+}
+
+function drawWorld(dt, vdt, alpha) {
+  const t = realTime;
+  // Enemies
+  for (const e of state.enemies) {
+    e.mesh.position.lerpVectors(e.prev, e.pos, alpha);
+    e.mesh.rotation.y = lerpAngle(e.mesh.rotation.y, e.yaw, 1 - Math.exp(-14 * dt));
+    e.anim += vdt * e.def.speed * 7;
+    const u = e.mesh.userData;
+    u.bob.position.y = Math.abs(Math.sin(e.anim)) * 0.06;
+    u.bob.rotation.z = Math.sin(e.anim) * 0.08;
+    u.armL.rotation.x = Math.sin(e.anim) * 0.7;
+    u.armR.rotation.x = -Math.sin(e.anim) * 0.7;
+    e.spawnT = Math.min(1, e.spawnT + vdt * 4);
+    e.mesh.scale.setScalar(0.4 + 0.6 * easeOutBack(e.spawnT));
+    e.flash = Math.max(0, e.flash - vdt * 7);
+    e.bodyMat.emissive.setRGB(e.flash, e.flash, e.flash);
+    const hpK = Math.max(0, e.hp / e.maxHp);
+    e.hb.group.visible = hpK < 1;
+    if (hpK < 1) {
+      e.hb.fill.scale.x = Math.max(0.001, hpK);
+      e.hb.fillMat.color.setHSL(0.33 * hpK, 0.9, 0.55);
+      e.hb.group.quaternion.copy(camera.quaternion).premultiply(tmpQ.copy(e.mesh.quaternion).invert());
+    }
+  }
+  // Towers
+  for (const tw of state.towers) {
+    const u = tw.mesh.userData;
+    tw.popT = Math.min(1, tw.popT + dt * 3.2);
+    tw.mesh.scale.setScalar(Math.max(0.01, easeOutBack(tw.popT)));
+    if (tw.targetId) u.head.rotation.y = lerpAngle(u.head.rotation.y, tw.yaw, 1 - Math.exp(-18 * dt));
+    else u.head.rotation.y += vdt * 0.4;   // idle scan
+    tw.recoil = Math.max(0, tw.recoil - vdt * 6);
+    u.recoil.position.z = -0.09 * tw.recoil;
+    u.bolt.visible = tw.recoil < 0.5;
+    u.glow.emissiveIntensity = 1.4 + tw.recoil * 2.5 + Math.sin(t * 2 + tw.id) * 0.2;
+    if (selected === tw) u.glow.emissiveIntensity += 0.6;
+  }
+  // Projectiles
+  for (const p of state.projectiles) {
+    p.mesh.position.lerpVectors(p.prev, p.pos, alpha);
+    p.mesh.lookAt(p.aim);
+  }
+  // Crystal and portal
+  if (crystal) {
+    crystal.mesh.rotation.y += dt * 0.9;
+    crystal.mesh.position.y = 0.78 + Math.sin(t * 1.6) * 0.06;
+    crystal.halo.rotation.z += dt * 0.5;
+    crystal.halo.position.y = 0.4 + Math.sin(t * 1.6 + 1) * 0.04;
+    crystal.hurt = Math.max(0, crystal.hurt - dt * 2);
+    crystal.mat.emissive.setRGB(0.17 + crystal.hurt * 0.9, 0.72 - crystal.hurt * 0.5, 1 - crystal.hurt * 0.6);
+    crystal.light.color.setRGB(0.44 + crystal.hurt * 0.56, 0.84 - crystal.hurt * 0.5, 1 - crystal.hurt * 0.5);
+    crystal.light.intensity = 6 + Math.sin(t * 2.2) * 1 + crystal.hurt * 6;
+    const lowLife = state.lives > 0 && state.lives <= 5 && state.phase === 'wave';
+    crystal.group.scale.setScalar(1 + crystal.hurt * 0.12 + (lowLife ? Math.sin(t * 8) * 0.02 : 0));
+  }
+  if (portal) {
+    portal.swirl.rotation.x += dt * 2;
+    const busy = state.phase === 'wave' ? 1 : 0;
+    portal.light.intensity = 2.5 + Math.sin(t * 3) * 0.6 + busy * 1.5;
+    portal.swirl.material.opacity = 0.7 + Math.sin(t * 4) * 0.15 + busy * 0.1;
+  }
+  // Fireflies drift on their own
+  if (fireflies) {
+    const { seeds, pos, pts } = fireflies;
+    for (let i = 0; i < seeds.length; i++) {
+      const s = seeds[i];
+      pos[i * 3] = s.x + Math.sin(t * s.sp + s.p) * 0.6;
+      pos[i * 3 + 1] = s.y + Math.sin(t * s.sp * 1.7 + s.p * 2) * 0.25;
+      pos[i * 3 + 2] = s.z + Math.cos(t * s.sp * 0.8 + s.p) * 0.6;
+    }
+    pts.geometry.attributes.position.needsUpdate = true;
+    pts.material.opacity = 0.55 + Math.sin(t * 1.3) * 0.2;
+  }
+}
+const tmpQ = new THREE.Quaternion();
+function easeOutBack(x) { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); }
+
+/* Pause automatically when the app goes to the background */
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && (state.phase === 'wave' || state.phase === 'ready') && !state.paused) togglePause();
+});
+
+/* =====================================================================
+   BOOT
+   ===================================================================== */
+map = buildMapModel(CONTENT.maps[CURRENT_MAP]);
+buildBoard();
+resetGame();
+renderCards();
+updateHud(true);
+fitCamera();
+showTitle();
+$('boot').hidden = true;
+window.__asdBooted = true;
+requestAnimationFrame((t) => { last = t; frame(t); });
+
+// Handy for testing in the browser console
+window.ASD = {
+  state, CONTENT, startWave, buildTower, step, map: () => map,
+  tileToScreen(c, r) { const v = map.toWorld(c, r, TILE_H).project(camera); return { x: (v.x * 0.5 + 0.5) * innerWidth, y: (-v.y * 0.5 + 0.5) * innerHeight }; },
+};
+</script>
+<script>
+  // If the 3D engine can't load (no internet, blocked CDN), say so instead of showing a blank page.
+  setTimeout(function () {
+    if (!window.__asdBooted) {
+      document.getElementById('boot').innerHTML = 'Couldn’t load the 3D engine.<br>Check your internet connection, then reload the page.';
+    }
+  }, 15000);
+  window.addEventListener('error', function (e) {
+    if (!window.__asdBooted) document.getElementById('boot').textContent = 'Something went wrong while loading: ' + (e.message || 'unknown error');
+  });
+</script>
+</body>
+</html>
