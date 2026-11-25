@@ -83,7 +83,7 @@
 
   /* ---------- Bottom build bar ---------- */
   #bottom-bar {
-    position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(8px + var(--safe-b));
+    position: fixed; left: 0; right: 0; margin-inline: auto; width: max-content; bottom: calc(8px + var(--safe-b));
     display: flex; gap: 8px; align-items: stretch; padding: 6px; z-index: 5; max-width: calc(100% - 20px);
   }
   .tower-card {
@@ -235,12 +235,79 @@
   #boot { position: fixed; inset: 0; display: grid; place-items: center; z-index: 30; background: var(--bg); color: var(--cyan); font-family: var(--font-display); letter-spacing: 2px; font-size: 13px; padding: 24px; text-align: center; }
   #boot[hidden] { display: none; }
 
+  /* ---------- Phase 3: big tower roster, upgrade panel ---------- */
+  #tower-cards { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; min-width: 0; }
+  #tower-cards::-webkit-scrollbar { display: none; }
+  .tower-card .side { position: absolute; left: 4px; top: 4px; width: 5px; height: 5px; transform: rotate(45deg); }
+  .tower-card .side.fantasy { background: var(--violet); box-shadow: 0 0 5px var(--violet); }
+  .tower-card .side.scifi { background: var(--cyan); box-shadow: 0 0 5px var(--cyan); }
+  #bottom-bar.compact #tower-cards { gap: 5px; }
+  .tower-card.compact { min-width: 50px; width: 50px; flex: none; height: 56px; padding: 4px 2px 3px; flex-direction: column; justify-content: center; gap: 2px; }
+  .tower-card.compact .ico { width: 34px; height: 31px; }
+  .tower-card.compact .ico svg { width: 24px; height: 24px; }
+  .tower-card.compact .nm { display: none; }
+  .tower-card.compact .cost { margin-top: 0; font-size: 11px; justify-content: center; gap: 2px; }
+  .tower-card.compact .cost svg { width: 10px; height: 10px; }
+  .tower-card.compact .key { top: 2px; right: 3px; font-size: 8px; padding: 0 2px; line-height: 11px; }
+  #bottom-bar.compact #start-wave { min-width: 112px; padding: 0 10px; }
+  #bottom-bar.compact #start-wave small { font-size: 11px; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #test-pill { color: var(--gold); font-family: var(--font-display); font-weight: 800; font-size: 11px; letter-spacing: 2px; padding: 0 12px; }
+  #test-pill[hidden] { display: none; }
+
+  #tower-info { width: 252px; max-height: calc(100% - 140px - var(--safe-t) - var(--safe-b)); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: rgba(88,230,255,.3) transparent; }
+  .ti-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .tier-badge { font-family: var(--font-display); font-size: 10px; font-weight: 800; letter-spacing: 1px; padding: 2px 7px; border: 1px solid var(--line); color: var(--cyan); white-space: nowrap; }
+  .ti-branch { font-family: var(--font-display); font-size: 11px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; margin: 2px 0 0; }
+  #tower-info .role { margin: 2px 0 8px; }
+  .ti-buff { font-size: 12px; font-weight: 700; color: #d6b8ff; margin: -4px 0 6px; }
+  .ti-label { font-family: var(--font-display); font-size: 9.5px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin: 10px 0 5px; }
+  #tower-info .stat-row { font-size: 13px; padding: 3px 0; gap: 10px; }
+  #tower-info .stat-row span:last-child { text-align: right; }
+  .target-seg { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+  .target-seg .btn { height: 30px; font-size: 12.5px; padding: 0; }
+  .up-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .up-btn {
+    position: relative; text-align: left; padding: 7px 7px 6px; border: 1px solid color-mix(in srgb, var(--bc) 55%, transparent); color: var(--text);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--bc) 16%, transparent), color-mix(in srgb, var(--bc) 5%, transparent));
+    clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+    display: flex; flex-direction: column; gap: 3px; min-height: 92px;
+  }
+  .up-btn.wide { grid-column: span 2; min-height: 0; }
+  .up-btn:active { transform: scale(0.97); }
+  .up-btn b { font-size: 13px; color: var(--bc); line-height: 1.1; }
+  .up-btn small { font-size: 12px; color: #c4d4e3; line-height: 1.2; }
+  .up-btn small.then { color: var(--muted); font-size: 11px; }
+  .up-btn .uc { margin-top: auto; display: flex; align-items: center; gap: 3px; font-family: var(--font-display); font-weight: 800; font-size: 12px; color: var(--gold); }
+  .up-btn .uc svg { width: 12px; height: 12px; }
+  .up-btn.poor { opacity: 0.55; }
+  .up-btn.poor .uc { color: var(--red); }
+  .maxed { margin-top: 10px; text-align: center; font-family: var(--font-display); font-size: 11px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); padding: 7px; border: 1px dashed rgba(255, 207, 90, 0.45); }
+  .floater.up { color: var(--cyan); font-size: 15px; letter-spacing: 2px; }
+  .card .actions + .actions { margin-top: 8px; }
+  .card .foot b { color: var(--muted); }
+
   @media (max-height: 460px) {
     .pill { height: 34px; }
     .icon-btn { height: 34px; width: 38px; }
     .tower-card { height: 50px; min-width: 144px; }
     .tower-card .ico { width: 38px; height: 38px; }
-    #tower-info { top: calc(50px + var(--safe-t)); width: 200px; padding: 10px; }
+    #tower-info { top: calc(50px + var(--safe-t)); width: 240px; padding: 9px 10px; max-height: calc(100% - 122px - var(--safe-t) - var(--safe-b)); }
+    .tower-card.compact { height: 50px; }
+    .tower-card.compact .ico { height: 27px; }
+    .up-btn { min-height: 0; }
+    /* Short screens: actions first, stats in two columns underneath */
+    #tower-info { display: flex; flex-direction: column; }
+    #tower-info .role, #tower-info .ti-buff { display: none; }
+    #tower-info .ti-up { order: 1; } #tower-info .ti-tg { order: 2; } #tower-info .info-actions { order: 3; margin-top: 8px; } #tower-info .ti-stats { order: 4; margin-top: 8px; }
+    #tower-info .ti-up .ti-label { margin-top: 6px; } #tower-info .ti-tg .ti-label { margin-top: 7px; }
+    #tower-info .maxed { margin-top: 6px; }
+    .ti-stats { display: grid; grid-template-columns: 1fr 1fr; column-gap: 10px; }
+    #tower-info .ti-stats .stat-row { flex-direction: column; gap: 0; padding: 3px 0; font-size: 12.5px; line-height: 1.15; }
+    #tower-info .ti-stats .stat-row span:first-child { font-size: 10.5px; color: var(--muted); }
+    #tower-info .ti-stats .stat-row span:last-child { text-align: left; }
+    .up-btn small.then { display: none; }
+    .info-actions .btn { height: 32px; }
+    .card .foot .keys { display: none; }
     .card { padding: 16px 18px 14px; }
     .card h1 { font-size: 19px; }
     .card ul { margin: 6px 0 8px; }
@@ -278,6 +345,7 @@
       <svg viewBox="0 0 24 24"><path d="M3 15c2.5 0 2.5-3 5-3s2.5 3 5 3 2.5-3 5-3 2.5 3 3 3M3 10c2.5 0 2.5-3 5-3s2.5 3 5 3 2.5-3 5-3 2.5 3 3 3" stroke="#7fd8ff" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
       <span class="label">Wave</span><span id="wave">0/1</span>
     </div>
+    <div class="pill glass" id="test-pill" hidden>TEST</div>
   </div>
   <div class="hud-group">
     <button class="icon-btn glass" id="speed-btn" title="Game speed (F)" aria-label="Game speed">1×</button>
@@ -291,7 +359,7 @@
 </div>
 
 <div id="bottom-bar" class="glass">
-  <div id="tower-cards" style="display:flex; gap:8px"></div>
+  <div id="tower-cards"></div>
   <button id="start-wave"><span id="start-wave-label">Start wave</span><small id="start-wave-sub"></small></button>
 </div>
 
@@ -319,22 +387,182 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
    Distances are in tiles, times in seconds.
    ===================================================================== */
 const CONTENT = {
+  /* Towers. `stats` is tier 1. Each branch lists tier 2 and tier 3; a tier's
+     stats are laid over the tier below it. Every number here can be tuned
+     without touching the engine. `attack` picks the engine behaviour:
+       shot    homing projectile (arrow, fireball)    bolt   straight piercing bolt
+       shell   lobbed mortar shell                    chain  chain lightning
+       beam    continuous laser                       pulse  hits everything in range on a timer
+       aura    constant damage close by               support boosts nearby towers
+       gravity pulls enemies together                 drones flying drones that hunt */
   towers: {
     arcaneArcher: {
-      name: 'Arcane Archer',
-      side: 'fantasy',
-      role: 'Single target, long range, fast',
-      cost: 50,
-      sellRefund: 0.7,          // share of total spent returned on sale
-      range: 3.4,
-      fireRate: 1.6,            // shots per second
-      damage: 13,
-      damageType: 'pierce',
-      projectileSpeed: 15,
-      targeting: 'first',       // furthest along the path
-      model: 'arcaneArcher',
-      color: 0x8fc8ff,
-      hotkey: '1',
+      name: 'Arcane Archer', side: 'fantasy', role: 'Single target, long range, fast',
+      cost: 50, color: 0x8fc8ff, model: 'arcaneArcher', hotkey: '1',
+      attack: 'shot', projectile: 'arrow', targets: true,
+      stats: { damage: 13, fireRate: 1.6, range: 3.4, speed: 15, damageType: 'pierce', air: true },
+      branches: {
+        a: { name: 'Marksman', color: 0xffcf5a, tiers: [
+          { desc: '26 damage, 1.0/s, range 4.4', stats: { damage: 26, fireRate: 1.0, range: 4.4 } },
+          { desc: 'Every 4th shot does triple damage', stats: { critEvery: 4, critMult: 3 } } ] },
+        b: { name: 'Volley', color: 0x5dffb0, tiers: [
+          { desc: 'Fires 2 arrows at 2 targets', stats: { shots: 2 } },
+          { desc: '3 arrows, 2.2/s', stats: { shots: 3, fireRate: 2.2 } } ] },
+      },
+    },
+    fireBrazier: {
+      name: 'Fire Brazier', side: 'fantasy', role: 'Splash damage and a burn over time',
+      cost: 70, color: 0xff7a2e, model: 'fireBrazier', hotkey: '2',
+      attack: 'shot', projectile: 'fireball', targets: true,
+      stats: { damage: 10, fireRate: 0.8, range: 2.6, speed: 7, splash: 1.0, burnDps: 4, burnTime: 3, damageType: 'magic', air: false },
+      branches: {
+        a: { name: 'Inferno', color: 0xffcf5a, tiers: [
+          { desc: 'Splash 1.5, burn 8/s', stats: { splash: 1.5, burnDps: 8 } },
+          { desc: 'Leaves burning ground for 3 s', stats: { firePatch: 3 } } ] },
+        b: { name: 'Phoenix', color: 0xff5f9a, tiers: [
+          { desc: 'Can hit flying enemies', stats: { air: true } },
+          { desc: 'Enemies it kills explode for 20 splash', stats: { explode: 20 } } ] },
+      },
+    },
+    frostObelisk: {
+      name: 'Frost Obelisk', side: 'fantasy', role: 'Slows all enemies in a radius',
+      cost: 60, color: 0x8fe8ff, model: 'frostObelisk', hotkey: '3',
+      attack: 'pulse', targets: false,
+      stats: { damage: 3, interval: 1.0, range: 2.4, slow: 0.3, slowTime: 1.5, damageType: 'magic', air: true },
+      branches: {
+        a: { name: 'Glacier', color: 0xdffbff, tiers: [
+          { desc: '50% slow', stats: { slow: 0.5 } },
+          { desc: 'Enemies slowed for 3 s freeze for 1 s', stats: { freezeAfter: 3, freeze: 1 } } ] },
+        b: { name: 'Shatter', color: 0x7f9dff, tiers: [
+          { desc: 'Slowed enemies take 20% more damage from all towers', stats: { vuln: 0.2 } },
+          { desc: '35% more damage, and 2 armor removed', stats: { vuln: 0.35, shred: 2 } } ] },
+      },
+    },
+    runeShrine: {
+      name: 'Rune Shrine', side: 'fantasy', role: 'Aura that boosts nearby towers',
+      cost: 90, color: 0xb07cff, model: 'runeShrine', hotkey: '4',
+      attack: 'support', targets: false,
+      stats: { range: 2.0, buffDamage: 0.15 },
+      branches: {
+        a: { name: 'War Rune', color: 0xff8a5a, tiers: [
+          { desc: 'Towers nearby deal 25% more damage', stats: { buffDamage: 0.25 } },
+          { desc: '35% more damage and 10% faster fire', stats: { buffDamage: 0.35, buffRate: 0.1 } } ] },
+        b: { name: 'Far Rune', color: 0x58e6ff, tiers: [
+          { desc: 'Towers nearby get 15% more range', stats: { buffRange: 0.15 } },
+          { desc: '25% more range, and boosted towers never miss wraiths', stats: { buffRange: 0.25, trueSight: true } } ] },
+      },
+    },
+    thornwall: {
+      name: 'Thornwall', side: 'fantasy', role: 'Damages enemies that pass close',
+      cost: 65, color: 0x6fe06a, model: 'thornwall', hotkey: '5',
+      attack: 'aura', targets: false,
+      stats: { dps: 6, range: 1.2, slow: 0.1, damageType: 'magic', air: false },
+      branches: {
+        a: { name: 'Brambles', color: 0xc7ff5a, tiers: [
+          { desc: '12 damage/s, radius 1.6', stats: { dps: 12, range: 1.6 } },
+          { desc: 'Roots the first enemy for 1.5 s every 8 s', stats: { rootEvery: 8, rootTime: 1.5 } } ] },
+        b: { name: 'Barbs', color: 0xff5f74, tiers: [
+          { desc: 'Adds a bleed of 3/s for 4 s', stats: { bleedDps: 3, bleedTime: 4 } },
+          { desc: 'Bleed spreads to nearby enemies when its target dies', stats: { bleedSpread: 1.0 } } ] },
+      },
+    },
+    ballista: {
+      name: 'Ballista', side: 'fantasy', role: 'Heavy bolt that pierces a line of enemies',
+      cost: 110, color: 0xe8c07a, model: 'ballista', hotkey: '6',
+      attack: 'bolt', targets: true,
+      stats: { damage: 60, fireRate: 0.45, range: 4.0, speed: 17, pierce: 4, damageType: 'pierce', air: true },
+      branches: {
+        a: { name: 'Siege Bolt', color: 0xff9a3a, tiers: [
+          { desc: '110 damage, ignores half of armor', stats: { damage: 110, ignoreArmor: 0.5 } },
+          { desc: 'Ignores all armor and knocks enemies back', stats: { ignoreArmor: 1, knockback: 0.6 } } ] },
+        b: { name: 'Repeater', color: 0x58e6ff, tiers: [
+          { desc: '0.8/s, passes through 6', stats: { fireRate: 0.8, pierce: 6 } },
+          { desc: '1.0/s, passes through every enemy in line', stats: { fireRate: 1.0, pierce: 99 } } ] },
+      },
+    },
+    teslaCoil: {
+      name: 'Tesla Coil', side: 'scifi', role: 'Chain lightning that jumps between enemies',
+      cost: 120, color: 0x9ad8ff, model: 'teslaCoil', hotkey: '7',
+      attack: 'chain', targets: true,
+      stats: { damage: 22, fireRate: 0.9, range: 2.8, chains: 3, falloff: 0.2, jump: 1.6, damageType: 'energy', air: true },
+      branches: {
+        a: { name: 'Storm Coil', color: 0xc9e8ff, tiers: [
+          { desc: 'Chains to 5 enemies', stats: { chains: 5 } },
+          { desc: 'Chains to 7 enemies', stats: { chains: 7 } } ] },
+        b: { name: 'Overcharge', color: 0xffe36a, tiers: [
+          { desc: '40 damage, 0.3 s stun', stats: { damage: 40, stun: 0.3 } },
+          { desc: '0.6 s stun, 50% more damage to shields', stats: { stun: 0.6, shieldBonus: 0.5 } } ] },
+      },
+    },
+    laserTurret: {
+      name: 'Laser Turret', side: 'scifi', role: 'Beam that ramps up on one target',
+      cost: 140, color: 0xff4d7a, model: 'laserTurret', hotkey: '8',
+      attack: 'beam', targets: true,
+      stats: { beamMin: 20, beamMax: 80, rampTime: 3, range: 3.8, beams: 1, split: 1, damageType: 'energy', air: true },
+      branches: {
+        a: { name: 'Focus', color: 0xffcf5a, tiers: [
+          { desc: 'Rises to 160 damage/s', stats: { beamMax: 160 } },
+          { desc: 'Keeps half its charge when it switches target', stats: { keepCharge: 0.5 } } ] },
+        b: { name: 'Prism', color: 0xc9a6ff, tiers: [
+          { desc: 'Splits to 2 targets at 60% each', stats: { beams: 2, split: 0.6 } },
+          { desc: 'Splits to 3 targets', stats: { beams: 3 } } ] },
+      },
+    },
+    plasmaMortar: {
+      name: 'Plasma Mortar', side: 'scifi', role: 'Slow, very large area blast',
+      cost: 150, color: 0x4dffa6, model: 'plasmaMortar', hotkey: '9',
+      attack: 'shell', targets: true,
+      stats: { damage: 70, splash: 1.6, fireRate: 0.3, range: 6, minRange: 2, damageType: 'blast', air: false },
+      branches: {
+        a: { name: 'Heavy Shell', color: 0xffcf5a, tiers: [
+          { desc: '130 damage, radius 1.8', stats: { damage: 130, splash: 1.8 } },
+          { desc: 'Hits remove 3 armor for 4 s', stats: { shred: 3, shredTime: 4 } } ] },
+        b: { name: 'Cluster', color: 0xff7ad9, tiers: [
+          { desc: 'Splits into 4 bomblets of 25', stats: { bomblets: 4, bombletDamage: 25 } },
+          { desc: '6 bomblets, 0.45/s', stats: { bomblets: 6, fireRate: 0.45 } } ] },
+      },
+    },
+    gravityWell: {
+      name: 'Gravity Well', side: 'scifi', role: 'Pulls enemies into a clump for splash towers',
+      cost: 130, color: 0x8f7dff, model: 'gravityWell', hotkey: '0',
+      attack: 'gravity', targets: false,
+      stats: { damage: 5, interval: 4, range: 2.2, pull: 1.2, insideSlow: 0.4, damageType: 'energy', air: true },
+      branches: {
+        a: { name: 'Singularity', color: 0xff5fd2, tiers: [
+          { desc: 'Pulls every 3 s', stats: { interval: 3 } },
+          { desc: 'Each pull deals 2% of max health (half on bosses)', stats: { crush: 0.02 } } ] },
+        b: { name: 'Event Horizon', color: 0x58e6ff, tiers: [
+          { desc: 'Enemies inside take 15% more damage', stats: { vuln: 0.15 } },
+          { desc: 'Enemies inside take 25% more damage', stats: { vuln: 0.25 } } ] },
+      },
+    },
+    droneHive: {
+      name: 'Drone Hive', side: 'scifi', role: 'Launches drones that chase enemies',
+      cost: 160, color: 0xffb347, model: 'droneHive', hotkey: '-',
+      attack: 'drones', targets: true,
+      stats: { drones: 2, damage: 8, fireRate: 2, range: 4.0, damageType: 'pierce', air: true },
+      branches: {
+        a: { name: 'Swarm', color: 0xffe36a, tiers: [
+          { desc: '3 drones', stats: { drones: 3 } },
+          { desc: '5 drones', stats: { drones: 5 } } ] },
+        b: { name: 'Hunter', color: 0xff5f74, tiers: [
+          { desc: 'Drones fire 30-damage missiles (0.8 radius)', stats: { missiles: true, damage: 30, splash: 0.8, fireRate: 0.7, damageType: 'blast' } },
+          { desc: '50% more damage to bosses', stats: { bossBonus: 0.5 } } ] },
+      },
+    },
+    ionPulse: {
+      name: 'Ion Pulse', side: 'scifi', role: 'Strips armor and shields in range',
+      cost: 120, color: 0x44ffd5, model: 'ionPulse', hotkey: '=',
+      attack: 'pulse', targets: false,
+      stats: { damage: 8, interval: 2, range: 2.6, shred: 2, shredTime: 4, shieldStrip: 0.25, damageType: 'energy', air: true },
+      branches: {
+        a: { name: 'Disruptor', color: 0xffcf5a, tiers: [
+          { desc: 'Removes 4 armor and 50% of shields', stats: { shred: 4, shieldStrip: 0.5 } },
+          { desc: 'Interrupts a boss ability once every 15 s', stats: { interrupt: 15 } } ] },
+        b: { name: 'Overload', color: 0xff5f9a, tiers: [
+          { desc: '20 damage, pulse every 1.5 s', stats: { damage: 20, interval: 1.5 } },
+          { desc: 'Stripped enemies take 15% more Energy damage', stats: { energyVuln: 0.15 } } ] },
+      },
     },
   },
   enemies: {
@@ -362,7 +590,7 @@ const CONTENT = {
       path: [[-1, 2], [3, 2], [3, 7], [7, 7], [7, 2], [11, 2], [11, 6], [14, 6]],
       startCoins: 120,
       startLives: 20,
-      towers: ['arcaneArcher'],
+      towers: ['arcaneArcher', 'fireBrazier', 'frostObelisk'],
       waves: [
         { groups: [{ enemy: 'goblin', count: 18, interval: 0.75, delay: 0 }] },
       ],
@@ -370,7 +598,18 @@ const CONTENT = {
   },
 };
 
-const CURRENT_MAP = 'trainingGrove';
+/* Test range: same board, every tower, lots of coins, waves that get tougher */
+CONTENT.maps.testRange = {
+  ...CONTENT.maps.trainingGrove,
+  name: 'Test range', test: true,
+  towers: Object.keys(CONTENT.towers),
+  startCoins: 3000, startLives: 50,
+  waves: Array.from({ length: 12 }, (_, i) => ({
+    groups: [{ enemy: 'goblin', count: 14 + i * 2, interval: Math.max(0.3, 0.7 - i * 0.035), delay: 0, hp: Math.round((1 + i * 0.85) * 10) / 10 }],
+  })),
+};
+
+let CURRENT_MAP = 'trainingGrove';
 
 /* =====================================================================
    SAVE — browser storage, wrapped so a blocked storage never breaks play
@@ -745,66 +984,579 @@ function ownMaterials(obj) {
   return [...map.values()];
 }
 
+/* Shared geometry cache: towers are rebuilt on every upgrade, so their shapes
+   are made once and reused (materials are still copied per tower). */
+const GEO = {};
+const geo = (type, ...a) => (GEO[type + ':' + a.join(',')] ||= new THREE[type](...a));
+
+/* Materials every tower draws from */
+function towerKit(def) {
+  const P = STYLE.palette;
+  return {
+    P,
+    dark: STYLE.metal(P.gunmetal, 0.55, 0.7),
+    steel: STYLE.metal(P.steel, 0.4, 0.8),
+    plate: STYLE.metal(P.plate, 0.32, 0.85),
+    trim: STYLE.metal(P.trim, 0.3, 0.9),
+    glow: STYLE.glow(def.color, 1.8),
+    holo: STYLE.holo(def.color, 0.55),
+    runeMat: STYLE.holo(P.rune, 0.85, runeTex),
+  };
+}
+/* Hex foundation, lit edge and the floating rune ring (the magic accent) */
+function addBase(g, k, runeY = 0.25) {
+  const base = mesh(geo('CylinderGeometry', 0.4, 0.44, 0.14, 6), k.dark, 0, 0.07, 0);
+  const top = mesh(geo('CylinderGeometry', 0.33, 0.38, 0.06, 6), k.steel, 0, 0.17, 0);
+  const edge = mesh(geo('TorusGeometry', 0.385, 0.014, 4, 6), k.glow, 0, 0.142, 0);
+  edge.rotation.set(Math.PI / 2, 0, Math.PI / 2);
+  const runeRing = mesh(geo('RingGeometry', 0.28, 0.5, 48), k.runeMat, 0, runeY, 0);
+  runeRing.rotation.x = -Math.PI / 2;
+  noShadow(edge, runeRing);
+  g.add(base, top, edge, runeRing);
+  return runeRing;
+}
+/* Six-sided column with three cooling fins and a glowing band */
+function addPylon(g, k, h = 0.46, y0 = 0.2) {
+  const column = mesh(geo('CylinderGeometry', 0.14, 0.2, h, 6), k.steel, 0, y0 + h / 2, 0);
+  const fins = new THREE.Group();
+  for (let i = 0; i < 3; i++) {
+    const a = (i * Math.PI * 2) / 3;
+    const f = mesh(geo('BoxGeometry', 0.05, h * 0.74, 0.15), k.plate, Math.sin(a) * 0.2, y0 + h * 0.48, Math.cos(a) * 0.2);
+    f.rotation.y = a;
+    fins.add(f);
+  }
+  const band = mesh(geo('CylinderGeometry', 0.155, 0.165, 0.05, 6, 1, true), k.glow, 0, y0 + h * 0.76, 0);
+  g.add(column, fins, band);
+}
+const strut = (material, a, b, w = 0.06) => {
+  const m = mesh(geo('BoxGeometry', w, w, 1), material);
+  m.position.lerpVectors(a, b, 0.5);
+  m.scale.z = a.distanceTo(b);
+  m.lookAt(b);
+  return m;
+};
+const V = (x, y, z) => new THREE.Vector3(x, y, z);
+
+/* Upgrade look: tier 2 adds a collar in the branch colour and pips,
+   tier 3 adds a floating crown. Height grows so the scan-in covers it. */
+function addTierDecor(g, def, tier, branch) {
+  const u = g.userData;
+  if (tier < 2 || !branch) return;
+  const bc = def.branches[branch].color;
+  const mat = STYLE.glow(bc, 0.9);
+  const collar = mesh(geo('TorusGeometry', 0.41, 0.014, 4, 6), mat, 0, 0.2, 0);
+  collar.rotation.set(Math.PI / 2, 0, Math.PI / 2);
+  g.add(collar);
+  for (let i = 0; i < tier; i++) {
+    const a = Math.PI + (i - (tier - 1) / 2) * 0.32;
+    const pip = mesh(geo('BoxGeometry', 0.07, 0.035, 0.03), mat, Math.sin(a) * 0.43, 0.08, Math.cos(a) * 0.43);
+    pip.rotation.y = a;
+    g.add(pip);
+  }
+  noShadow(collar);
+  u.tierGlow = mat;
+  if (tier >= 3) {
+    const halo = new THREE.Group();
+    halo.position.y = (u.height || 1) + 0.1;
+    const ring = mesh(geo('TorusGeometry', 0.15, 0.008, 4, 32), mat, 0, 0, 0);
+    ring.rotation.x = Math.PI / 2;
+    halo.add(ring);
+    for (let i = 0; i < 3; i++) {
+      const a = (i * Math.PI * 2) / 3;
+      halo.add(mesh(geo('OctahedronGeometry', 0.028), mat, Math.cos(a) * 0.15, 0, Math.sin(a) * 0.15));
+    }
+    noShadow(...halo.children);
+    g.add(halo);
+    u.halo = halo;
+    u.height = (u.height || 1) + 0.18;
+    g.scale.setScalar(1.06);
+  }
+}
+function finishTower(g, k, u) {
+  shadowed(g);
+  g.userData = { glow: k.glow, runeMat: k.runeMat, radius: 0.46, height: 1, ...u };
+  return g;
+}
+
 const MODELS = {
   towers: {
-    arcaneArcher(def) {
-      const P = STYLE.palette;
-      const g = new THREE.Group();
-      const dark = STYLE.metal(P.gunmetal, 0.55, 0.7);
-      const steel = STYLE.metal(P.steel, 0.4, 0.8);
-      const plate = STYLE.metal(P.plate, 0.32, 0.85);
-      const glow = STYLE.glow(def.color, 1.8);
-      const holoMat = STYLE.holo(def.color, 0.55);
-      const runeMat = STYLE.holo(P.rune, 0.85, runeTex);
-      const gemMat = STYLE.glow(P.rune, 2.2);
-
-      // Hex foundation with a lit edge
-      const base = mesh(new THREE.CylinderGeometry(0.4, 0.44, 0.14, 6), dark, 0, 0.07, 0);
-      const baseTop = mesh(new THREE.CylinderGeometry(0.33, 0.38, 0.06, 6), steel, 0, 0.17, 0);
-      const edge = mesh(new THREE.TorusGeometry(0.385, 0.014, 4, 6), glow, 0, 0.142, 0);
-      edge.rotation.set(Math.PI / 2, 0, Math.PI / 2);
-      // Floating rune ring: the magic accent
-      const runeRing = mesh(new THREE.RingGeometry(0.28, 0.5, 48), runeMat, 0, 0.25, 0);
-      runeRing.rotation.x = -Math.PI / 2;
-      // Pylon with three cooling fins and a glowing band
-      const column = mesh(new THREE.CylinderGeometry(0.14, 0.2, 0.46, 6), steel, 0, 0.43, 0);
-      const fins = new THREE.Group();
-      const finGeo = new THREE.BoxGeometry(0.05, 0.34, 0.15);
-      for (let i = 0; i < 3; i++) {
-        const f = mesh(finGeo, plate, Math.sin((i * Math.PI * 2) / 3) * 0.2, 0.42, Math.cos((i * Math.PI * 2) / 3) * 0.2);
-        f.rotation.y = (i * Math.PI * 2) / 3;
-        fins.add(f);
-      }
-      const band = mesh(new THREE.CylinderGeometry(0.155, 0.165, 0.05, 6, 1, true), glow, 0, 0.55, 0);
-
-      // Turret head (turns to aim)
+    arcaneArcher(def, tier = 1, branch = null) {
+      const k = towerKit(def), g = new THREE.Group();
+      const runeRing = addBase(g, k);
+      addPylon(g, k);
+      const gemMat = STYLE.glow(k.P.rune, 2.2);
       const head = new THREE.Group();
       head.position.y = 0.7;
-      const yoke = mesh(new THREE.BoxGeometry(0.34, 0.08, 0.28), dark, 0, 0.0, 0);
-      const cheekL = mesh(new THREE.BoxGeometry(0.05, 0.16, 0.22), plate, -0.15, 0.08, 0);
-      const cheekR = cheekL.clone(); cheekR.position.x = 0.15;
+      const yoke = mesh(geo('BoxGeometry', 0.34, 0.08, 0.28), k.dark);
+      const cheekL = mesh(geo('BoxGeometry', 0.05, 0.16, 0.22), k.plate, -0.15, 0.08, 0);
+      const cheekR = mesh(geo('BoxGeometry', 0.05, 0.16, 0.22), k.plate, 0.15, 0.08, 0);
       const recoil = new THREE.Group();
-      const rail = mesh(new THREE.BoxGeometry(0.07, 0.05, 0.52), steel, 0, 0.12, 0.04);
-      const railLight = mesh(new THREE.BoxGeometry(0.02, 0.012, 0.4), glow, 0, 0.148, 0.04);
-      // Hologram bow: soft outer arc, bright core line, string and tips
-      const bow = mesh(new THREE.TorusGeometry(0.26, 0.03, 4, 28, Math.PI), holoMat, 0, 0.13, 0.12);
-      bow.rotation.x = Math.PI / 2;
-      const bowCore = mesh(new THREE.TorusGeometry(0.26, 0.009, 4, 28, Math.PI), glow, 0, 0.13, 0.12);
-      bowCore.rotation.x = Math.PI / 2;
-      const string = mesh(new THREE.BoxGeometry(0.52, 0.006, 0.006), holoMat, 0, 0.13, 0.12);
-      const tipGeo = new THREE.OctahedronGeometry(0.03);
-      const tipL = mesh(tipGeo, glow, -0.26, 0.13, 0.12), tipR = mesh(tipGeo, glow, 0.26, 0.13, 0.12);
-      const bolt = mesh(new THREE.CylinderGeometry(0.014, 0.014, 0.44, 6), glow, 0, 0.17, 0.12);
+      const long = branch === 'a' ? 1.25 : 1;
+      const rail = mesh(geo('BoxGeometry', 0.07, 0.05, 0.52 * long), k.steel, 0, 0.12, 0.04 + (long - 1) * 0.2);
+      const railLight = mesh(geo('BoxGeometry', 0.02, 0.012, 0.4 * long), k.glow, 0, 0.148, 0.04 + (long - 1) * 0.2);
+      recoil.add(rail, railLight);
+      // Hologram bow(s): Volley stacks one bow per arrow
+      const bows = branch === 'b' ? Math.min(3, tier) : 1;
+      for (let i = 0; i < bows; i++) {
+        const y = 0.13 + (i - (bows - 1) / 2) * 0.09;
+        const sc = 1 - Math.abs(i - (bows - 1) / 2) * 0.12;
+        const bow = mesh(geo('TorusGeometry', 0.26, 0.03, 4, 28, Math.PI), k.holo, 0, y, 0.12);
+        bow.rotation.x = Math.PI / 2; bow.scale.setScalar(sc);
+        const core = mesh(geo('TorusGeometry', 0.26, 0.009, 4, 28, Math.PI), k.glow, 0, y, 0.12);
+        core.rotation.x = Math.PI / 2; core.scale.setScalar(sc);
+        const string = mesh(geo('BoxGeometry', 0.52, 0.006, 0.006), k.holo, 0, y, 0.12);
+        string.scale.x = sc;
+        noShadow(bow, string);
+        recoil.add(bow, core, string,
+          mesh(geo('OctahedronGeometry', 0.03), k.glow, -0.26 * sc, y, 0.12),
+          mesh(geo('OctahedronGeometry', 0.03), k.glow, 0.26 * sc, y, 0.12));
+      }
+      const bolt = mesh(geo('CylinderGeometry', 0.014, 0.014, 0.44, 6), k.glow, 0, 0.17, 0.12);
       bolt.rotation.x = Math.PI / 2;
-      const gem = mesh(new THREE.OctahedronGeometry(0.055), gemMat, 0, 0.2, -0.2);
-      recoil.add(rail, railLight, bow, bowCore, string, tipL, tipR, bolt, gem);
+      const gem = mesh(geo('OctahedronGeometry', 0.055), gemMat, 0, 0.2, -0.2);
+      recoil.add(bolt, gem);
+      if (branch === 'a') {   // Marksman scope
+        const scope = mesh(geo('CylinderGeometry', 0.035, 0.035, 0.2, 8), k.dark, 0, 0.21, 0.08);
+        scope.rotation.x = Math.PI / 2;
+        recoil.add(scope, mesh(geo('CircleGeometry', 0.03, 12), STYLE.glow(0xffcf5a, 3), 0, 0.21, 0.181));
+      }
+      const muzzle = new THREE.Object3D();
+      muzzle.position.set(0, 0.17, 0.3);
+      recoil.add(muzzle);
       head.add(yoke, cheekL, cheekR, recoil);
+      g.add(head);
+      noShadow(railLight);
+      return finishTower(g, k, {
+        head, aims: true, recoil, muzzle, runeRing, height: 1.0,
+        anim(tw, dt, t) { bolt.visible = tw.recoil < 0.5; gem.rotation.y += dt * 2; gemMat.emissiveIntensity = 2 + Math.sin(t * 3 + tw.id) * 0.6; k.holo.opacity = 0.45 + tw.recoil * 0.4 + (Math.sin(t * 23 + tw.id * 3) > 0.92 ? -0.25 : 0); },
+      });
+    },
 
-      g.add(base, baseTop, edge, runeRing, column, fins, band, head);
-      noShadow(runeRing, bow, string, edge, railLight);
-      shadowed(g);
-      g.userData = { head, recoil, glow, bolt, gem, gemMat, holoMat, runeMat, runeRing, muzzleY: 0.87, height: 1.0, radius: 0.46 };
-      return g;
+    fireBrazier(def, tier = 1, branch = null) {
+      const k = towerKit(def), g = new THREE.Group();
+      const runeRing = addBase(g, k);
+      // Three legs holding a metal bowl
+      for (let i = 0; i < 3; i++) {
+        const a = (i * Math.PI * 2) / 3 + 0.5;
+        g.add(strut(k.steel, V(Math.sin(a) * 0.29, 0.2, Math.cos(a) * 0.29), V(Math.sin(a) * 0.17, 0.64, Math.cos(a) * 0.17), 0.055));
+        g.add(mesh(geo('BoxGeometry', 0.05, 0.08, 0.05), k.glow, Math.sin(a) * 0.23, 0.42, Math.cos(a) * 0.23));
+      }
+      const bowlMat = new THREE.MeshStandardMaterial({ color: k.P.plate, roughness: 0.35, metalness: 0.85, side: THREE.DoubleSide });
+      const bowl = mesh(geo('CylinderGeometry', 0.27, 0.14, 0.17, 8, 1, true), bowlMat, 0, 0.7, 0);
+      const coals = mesh(geo('CircleGeometry', 0.24, 8), STYLE.glow(0xff4a1a, 1.4), 0, 0.68, 0);
+      coals.rotation.x = -Math.PI / 2;
+      const rim = mesh(geo('TorusGeometry', 0.27, 0.02, 4, 8), k.glow, 0, 0.785, 0);
+      rim.rotation.x = Math.PI / 2;
+      const coreMat = STYLE.glow(branch === 'b' ? 0xff6aa8 : 0xffa040, 3);
+      const core = mesh(geo('SphereGeometry', 0.11, 12, 8), coreMat, 0, 0.8, 0);
+      const flameMat = STYLE.holo(branch === 'b' ? 0xff5f9a : 0xff7a2e, 0.7);
+      const tipMat = STYLE.holo(0xffd27a, 0.6);
+      const flames = [];
+      const n = 3 + (tier - 1) * 2;
+      for (let i = 0; i < n; i++) {
+        const a = (i / n) * Math.PI * 2, r = i === 0 ? 0 : 0.1;
+        const f = mesh(geo('ConeGeometry', 0.09, 0.42, 6, 1, true), i % 2 ? tipMat : flameMat, Math.sin(a) * r, 0.95, Math.cos(a) * r);
+        flames.push(f);
+        g.add(f);
+      }
+      if (branch === 'b') {   // Phoenix wings of light
+        for (const s of [-1, 1]) {
+          const wing = mesh(geo('ConeGeometry', 0.07, 0.5, 3, 1, true), flameMat, s * 0.3, 0.98, 0);
+          wing.rotation.z = s * -1.0;
+          flames.push(wing); g.add(wing);
+        }
+      }
+      noShadow(coals, rim, core, ...flames);
+      const muzzle = new THREE.Object3D();
+      muzzle.position.set(0, 0.95, 0);
+      g.add(bowl, coals, rim, core, muzzle);
+      return finishTower(g, k, {
+        aims: false, muzzle, runeRing, height: 1.2,
+        anim(tw, dt, t, vdt) {
+          flames.forEach((f, i) => { const s = 0.75 + Math.sin(t * 9 + i * 2.1) * 0.22 + tw.recoil * 0.5; f.scale.set(1 - tw.recoil * 0.2, s, 1 - tw.recoil * 0.2); f.rotation.y = t * 1.5 + i; });
+          coreMat.emissiveIntensity = 2.6 + Math.sin(t * 13 + tw.id) * 0.5 + tw.recoil * 2;
+          if (vdt > 0 && Math.random() < vdt * 5 * Q.fx) Particles.burst(tmpV.set(tw.pos.x + (Math.random() - 0.5) * 0.25, tw.pos.y + 1.0, tw.pos.z + (Math.random() - 0.5) * 0.25), { count: 1, color: 0xff9a3a, speed: 0.2, up: 1.2, lifeTime: 0.8, gravity: -0.6 });
+        },
+      });
+    },
+
+    frostObelisk(def, tier = 1, branch = null) {
+      const k = towerKit(def), g = new THREE.Group();
+      const runeRing = addBase(g, k);
+      const socket = mesh(geo('CylinderGeometry', 0.2, 0.25, 0.14, 6), k.steel, 0, 0.27, 0);
+      const iceMat = new THREE.MeshStandardMaterial({ color: branch === 'b' ? 0xb8c8ff : 0xc8f6ff, emissive: branch === 'b' ? 0x4a6aff : 0x3fc8ff, emissiveIntensity: 0.9, roughness: 0.12, metalness: 0.1, transparent: true, opacity: 0.88 });
+      const crystalM = mesh(geo('OctahedronGeometry', 0.2, 0), iceMat, 0, 0.82, 0);
+      crystalM.scale.set(1, 2.7 + (tier - 1) * 0.25, 1);
+      const clamps = [];
+      for (const [y, r] of [[0.48, 0.15], [1.0, 0.13]]) {
+        const c = mesh(geo('TorusGeometry', r, 0.025, 4, 6), k.steel, 0, y, 0);
+        c.rotation.x = Math.PI / 2;
+        const l = mesh(geo('TorusGeometry', r + 0.02, 0.008, 4, 6), k.glow, 0, y, 0);
+        l.rotation.x = Math.PI / 2;
+        clamps.push(c); g.add(c, l);
+      }
+      const shards = new THREE.Group();
+      shards.position.y = 0.85;
+      const n = 3 + (tier - 1);
+      for (let i = 0; i < n; i++) {
+        const a = (i / n) * Math.PI * 2;
+        const s = mesh(geo('OctahedronGeometry', 0.05, 0), iceMat, Math.cos(a) * 0.34, Math.sin(i * 2) * 0.08, Math.sin(a) * 0.34);
+        s.scale.y = 1.8;
+        shards.add(s);
+      }
+      g.add(socket, crystalM, shards);
+      return finishTower(g, k, {
+        aims: false, runeRing, muzzleY: 0.9, height: 1.4,
+        anim(tw, dt, t, vdt) {
+          shards.rotation.y += dt * 0.9;
+          crystalM.position.y = 0.82 + Math.sin(t * 1.8 + tw.id) * 0.03;
+          iceMat.emissiveIntensity = 0.8 + tw.recoil * 2.2 + Math.sin(t * 2 + tw.id) * 0.15;
+          if (vdt > 0 && Math.random() < vdt * 3 * Q.fx) Particles.burst(tmpV.set(tw.pos.x + (Math.random() - 0.5) * 0.5, tw.pos.y + 0.4 + Math.random() * 0.8, tw.pos.z + (Math.random() - 0.5) * 0.5), { count: 1, color: 0xbff4ff, speed: 0.1, up: -0.2, lifeTime: 1, gravity: 0.3 });
+        },
+      });
+    },
+
+    runeShrine(def, tier = 1, branch = null) {
+      const k = towerKit(def), g = new THREE.Group();
+      const runeRing = addBase(g, k);
+      const ped = mesh(geo('CylinderGeometry', 0.22, 0.3, 0.22, 6), k.steel, 0, 0.31, 0);
+      const pedTop = mesh(geo('CylinderGeometry', 0.18, 0.22, 0.05, 6), k.plate, 0, 0.445, 0);
+      const stoneMat = STYLE.matte(0x2a2540, 0.7);
+      const stone = new THREE.Group();
+      stone.position.y = 0.82;
+      stone.add(mesh(geo('BoxGeometry', 0.22, 0.46, 0.12), stoneMat));
+      const faceMat = STYLE.holo(branch === 'a' ? 0xff8a5a : branch === 'b' ? 0x58e6ff : k.P.rune, 0.95, runeTex);
+      for (const z of [0.061, -0.061]) {
+        const f = mesh(geo('PlaneGeometry', 0.2, 0.2), faceMat, 0, 0.06, z);
+        if (z < 0) f.rotation.y = Math.PI;
+        stone.add(f);
+      }
+      const cap = mesh(geo('OctahedronGeometry', 0.07), STYLE.glow(def.color, 2.6), 0, 0.33, 0);
+      stone.add(cap);
+      const rings = [];
+      for (let i = 0; i < 2; i++) {
+        const r = mesh(geo('TorusGeometry', 0.3 - i * 0.05, 0.01, 4, 40), k.glow, 0, 0.82, 0);
+        rings.push(r); g.add(r);
+      }
+      // Coverage ring on the ground, scaled to the aura's reach each frame
+      const aura = new THREE.Group();
+      const auraMat = STYLE.holo(def.color, 0.35);
+      const auraDisc = STYLE.holo(def.color, 0.12, runeTex);
+      const ar = mesh(geo('RingGeometry', 0.96, 1, 64), auraMat);
+      const ad = mesh(geo('CircleGeometry', 1, 48), auraDisc);
+      ar.rotation.x = ad.rotation.x = -Math.PI / 2;
+      ar.position.y = 0.02; ad.position.y = 0.015;
+      ar.renderOrder = ad.renderOrder = 4;
+      aura.add(ad, ar);
+      noShadow(ar, ad, ...stone.children.slice(1), ...rings);
+      g.add(ped, pedTop, stone, aura);
+      return finishTower(g, k, {
+        aims: false, runeRing, muzzleY: 0.9, height: 1.2, aura,
+        anim(tw, dt, t) {
+          stone.position.y = 0.82 + Math.sin(t * 1.4 + tw.id) * 0.04;
+          stone.rotation.y += dt * 0.5;
+          rings[0].rotation.set(Math.PI / 2 + Math.sin(t * 0.8) * 0.6, t * 0.9, 0);
+          rings[1].rotation.set(Math.PI / 2 + Math.cos(t * 0.7) * 0.7, -t * 1.2, 0.5);
+          faceMat.opacity = 0.75 + Math.sin(t * 2.4 + tw.id) * 0.2;
+          const r = tRange(tw) / (tw.mesh.scale.x || 1);
+          aura.scale.set(r, 1, r);
+          ad.rotation.z -= dt * 0.15;
+          auraMat.opacity = 0.28 + Math.sin(t * 2) * 0.08 + (selected === tw ? 0.25 : 0);
+        },
+      });
+    },
+
+    thornwall(def, tier = 1, branch = null) {
+      const k = towerKit(def), g = new THREE.Group();
+      const runeRing = addBase(g, k, 0.2);
+      const planter = mesh(geo('CylinderGeometry', 0.36, 0.39, 0.16, 6), k.dark, 0, 0.28, 0);
+      const soil = mesh(geo('CircleGeometry', 0.33, 6), STYLE.matte(STYLE.palette.mossDark), 0, 0.362, 0);
+      soil.rotation.x = -Math.PI / 2;
+      const thornMat = STYLE.matte(branch === 'b' ? 0x5a2a2a : 0x3c7a34, 0.8);
+      const tipMat = STYLE.glow(branch === 'b' ? 0xff5f74 : def.color, 1.6);
+      const spikes = new THREE.Group();
+      spikes.position.y = 0.36;
+      const n = 8 + (tier - 1) * 2;
+      for (let i = 0; i < n; i++) {
+        const a = (i / n) * Math.PI * 2;
+        const s = new THREE.Group();
+        s.position.set(Math.sin(a) * 0.25, 0, Math.cos(a) * 0.25);
+        s.rotation.set(Math.cos(a) * 0.5, 0, -Math.sin(a) * 0.5);
+        const h = 0.3 + (i % 2) * 0.1;
+        s.add(mesh(geo('ConeGeometry', 0.05, h, 5), thornMat, 0, h / 2, 0), mesh(geo('ConeGeometry', 0.018, 0.08, 4), tipMat, 0, h - 0.02, 0));
+        spikes.add(s);
+      }
+      const heart = mesh(geo('ConeGeometry', 0.08, 0.5, 6), thornMat, 0, 0.25, 0);
+      const heartGlow = mesh(geo('OctahedronGeometry', 0.06), tipMat, 0, 0.42, 0);
+      spikes.add(heart, heartGlow);
+      const vine = mesh(geo('TorusGeometry', 0.3, 0.025, 5, 18), STYLE.matte(STYLE.palette.moss), 0, 0.38, 0);
+      vine.rotation.x = Math.PI / 2;
+      g.add(planter, soil, spikes, vine);
+      return finishTower(g, k, {
+        aims: false, runeRing, muzzleY: 0.6, height: 0.9,
+        anim(tw, dt, t, vdt) {
+          const on = tw.active ? 1 : 0;
+          tw.bristle = (tw.bristle || 0) + ((on - (tw.bristle || 0)) * Math.min(1, dt * 6));
+          spikes.children.forEach((s, i) => { if (i < n) s.scale.y = 1 + tw.bristle * 0.25 + Math.sin(t * 7 + i) * 0.05 * tw.bristle; });
+          spikes.rotation.y += dt * (0.2 + tw.bristle * 0.8);
+          tipMat.emissiveIntensity = 1.4 + tw.bristle * 1.6 + tw.recoil * 2;
+        },
+      });
+    },
+
+    ballista(def, tier = 1, branch = null) {
+      const k = towerKit(def), g = new THREE.Group();
+      const runeRing = addBase(g, k);
+      addPylon(g, k, 0.4);
+      const head = new THREE.Group();
+      head.position.y = 0.66;
+      const turn = mesh(geo('CylinderGeometry', 0.2, 0.22, 0.07, 8), k.dark);
+      const recoil = new THREE.Group();
+      const stock = mesh(geo('BoxGeometry', 0.13, 0.1, 0.78), k.steel, 0, 0.12, 0.02);
+      const groove = mesh(geo('BoxGeometry', 0.03, 0.012, 0.7), k.glow, 0, 0.176, 0.02);
+      const heavy = branch === 'a' ? 1.25 : 1;
+      const armMat = branch === 'b' ? k.trim : k.plate;
+      const arms = [];
+      for (const s of [-1, 1]) {
+        const arm = mesh(geo('BoxGeometry', 0.42 * heavy, 0.05, 0.07), armMat, s * 0.22 * heavy, 0.13, 0.3);
+        arm.rotation.y = s * 0.35;
+        arms.push(arm);
+        recoil.add(arm, mesh(geo('OctahedronGeometry', 0.035), k.glow, s * 0.4 * heavy, 0.13, 0.22));
+      }
+      const string = mesh(geo('BoxGeometry', 0.8 * heavy, 0.008, 0.008), k.holo, 0, 0.14, 0.18);
+      const boltMat = STYLE.glow(def.color, 2.2);
+      const bolt = new THREE.Group();
+      bolt.add(mesh(geo('CylinderGeometry', 0.02, 0.02, 0.6, 6), k.trim, 0, 0, 0), mesh(geo('ConeGeometry', 0.045, 0.14, 6), boltMat, 0, 0.36, 0));
+      bolt.rotation.x = Math.PI / 2;
+      bolt.position.set(0, 0.19, 0.1);
+      if (branch === 'b') {   // Repeater magazine
+        recoil.add(mesh(geo('BoxGeometry', 0.17, 0.12, 0.2), k.dark, 0, 0.27, -0.12), mesh(geo('BoxGeometry', 0.18, 0.02, 0.16), k.glow, 0, 0.335, -0.12));
+      }
+      const muzzle = new THREE.Object3D();
+      muzzle.position.set(0, 0.19, 0.45);
+      recoil.add(stock, groove, string, bolt, muzzle);
+      head.add(turn, recoil);
+      g.add(head);
+      noShadow(string, groove);
+      return finishTower(g, k, {
+        head, aims: true, recoil, recoilScale: 1.6, muzzle, runeRing, height: 1.0,
+        anim(tw) { bolt.visible = tw.recoil < 0.3; string.position.z = 0.18 - tw.recoil * 0.12 + (tw.recoil < 0.3 ? 0 : 0.0); },
+      });
+    },
+
+    teslaCoil(def, tier = 1, branch = null) {
+      const k = towerKit(def), g = new THREE.Group();
+      const runeRing = addBase(g, k);
+      const copper = STYLE.metal(branch === 'b' ? 0xd8a640 : 0xc9873a, 0.35, 0.9);
+      const column = mesh(geo('CylinderGeometry', 0.09, 0.15, 0.62, 8), k.steel, 0, 0.5, 0);
+      g.add(column);
+      const coils = [];
+      const n = 3 + (tier - 1);
+      for (let i = 0; i < n; i++) {
+        const y = 0.34 + i * (0.44 / n);
+        const r = 0.2 - i * 0.025;
+        const c = mesh(geo('TorusGeometry', r, 0.03, 6, 20), copper, 0, y, 0);
+        c.rotation.x = Math.PI / 2;
+        coils.push({ y, r }); g.add(c);
+      }
+      const orbMat = STYLE.glow(def.color, 2.6);
+      const orb = mesh(geo('SphereGeometry', 0.13, 16, 12), orbMat, 0, 0.92, 0);
+      const cage = mesh(geo('IcosahedronGeometry', 0.19, 0), STYLE.holo(def.color, 0.35), 0, 0.92, 0);
+      cage.material.wireframe = true;
+      const crown = new THREE.Group();
+      crown.position.y = 0.92;
+      for (let i = 0; i < 4; i++) {
+        const a = (i / 4) * Math.PI * 2;
+        crown.add(strut(k.trim, V(Math.cos(a) * 0.12, -0.12, Math.sin(a) * 0.12), V(Math.cos(a) * 0.2, 0.06, Math.sin(a) * 0.2), 0.025));
+      }
+      noShadow(cage);
+      const muzzle = new THREE.Object3D();
+      muzzle.position.set(0, 0.92, 0);
+      g.add(orb, cage, crown, muzzle);
+      return finishTower(g, k, {
+        aims: false, muzzle, runeRing, height: 1.15,
+        anim(tw, dt, t, vdt) {
+          cage.rotation.y += dt * 1.4; cage.rotation.x += dt * 0.6;
+          crown.rotation.y -= dt * 0.5;
+          orbMat.emissiveIntensity = 2.2 + tw.recoil * 4 + (Math.random() < 0.1 ? 1 : 0);
+          // Idle arcs between the coils and the orb
+          if (vdt > 0 && Math.random() < vdt * 2.5 * Q.fx) {
+            const c = coils[Math.floor(Math.random() * coils.length)], a = Math.random() * Math.PI * 2;
+            const sc = tw.mesh.scale.x;
+            Fx.lightning(V(tw.pos.x + Math.cos(a) * c.r * sc, tw.pos.y + c.y * sc, tw.pos.z + Math.sin(a) * c.r * sc), V(tw.pos.x, tw.pos.y + 0.92 * sc, tw.pos.z), def.color, 0.09, 0.05, 0.6);
+          }
+        },
+      });
+    },
+
+    laserTurret(def, tier = 1, branch = null) {
+      const k = towerKit(def), g = new THREE.Group();
+      const runeRing = addBase(g, k);
+      addPylon(g, k, 0.42);
+      const head = new THREE.Group();
+      head.position.y = 0.7;
+      const recoil = new THREE.Group();
+      const body = mesh(geo('BoxGeometry', 0.26, 0.2, 0.34), k.dark, 0, 0.1, -0.02);
+      const top = mesh(geo('BoxGeometry', 0.2, 0.04, 0.26), k.plate, 0, 0.22, -0.04);
+      const barrel = mesh(geo('CylinderGeometry', 0.045, 0.055, 0.36, 10), k.steel, 0, 0.11, 0.3);
+      barrel.rotation.x = Math.PI / 2;
+      const coolMat = STYLE.glow(def.color, 1.5);
+      for (let i = 0; i < 3; i++) {
+        const r = mesh(geo('TorusGeometry', 0.06, 0.012, 4, 12), coolMat, 0, 0.11, 0.2 + i * 0.07);
+        recoil.add(r);
+      }
+      const lensMat = STYLE.glow(branch === 'b' ? 0xc9a6ff : def.color, 3);
+      const lens = mesh(geo('SphereGeometry', 0.05, 12, 8), lensMat, 0, 0.11, 0.49);
+      for (const s of [-1, 1]) {
+        const fin = mesh(geo('BoxGeometry', 0.04, 0.16, 0.24), k.plate, s * 0.16, 0.1, -0.04);
+        recoil.add(fin, mesh(geo('BoxGeometry', 0.01, 0.1, 0.18), coolMat, s * 0.183, 0.1, -0.04));
+      }
+      if (branch === 'b') {   // Prism crystal
+        const prism = mesh(geo('OctahedronGeometry', 0.06), STYLE.holo(0xc9a6ff, 0.8), 0, 0.11, 0.56);
+        prism.scale.set(1, 1, 1.6);
+        recoil.add(prism);
+      }
+      const muzzle = new THREE.Object3D();
+      muzzle.position.set(0, 0.11, branch === 'b' ? 0.6 : 0.52);
+      recoil.add(body, top, barrel, lens, muzzle);
+      head.add(recoil);
+      g.add(head);
+      return finishTower(g, k, {
+        head, aims: true, recoil, recoilScale: 0.3, muzzle, runeRing, height: 1.0,
+        anim(tw, dt, t) {
+          const ramp = tw.ramp || 0;
+          lensMat.emissiveIntensity = 2.2 + ramp * 4 + (tw.beamOn ? Math.sin(t * 40) * 0.5 : 0);
+          coolMat.emissiveIntensity = 1.2 + ramp * 2.5;
+          if (tw.beamOn) recoil.position.z = -0.012 * Math.sin(t * 60);
+        },
+      });
+    },
+
+    plasmaMortar(def, tier = 1, branch = null) {
+      const k = towerKit(def), g = new THREE.Group();
+      const runeRing = addBase(g, k);
+      const head = new THREE.Group();
+      head.position.y = 0.22;
+      const table = mesh(geo('CylinderGeometry', 0.32, 0.34, 0.1, 8), k.steel, 0, 0.05, 0);
+      const cradleL = mesh(geo('BoxGeometry', 0.06, 0.28, 0.2), k.plate, -0.17, 0.22, 0);
+      const cradleR = mesh(geo('BoxGeometry', 0.06, 0.28, 0.2), k.plate, 0.17, 0.22, 0);
+      const tube = new THREE.Group();
+      tube.position.set(0, 0.3, 0);
+      tube.rotation.x = 0.62;
+      const recoil = new THREE.Group();
+      const w = branch === 'a' ? 1.25 : 1;
+      recoil.add(
+        mesh(geo('CylinderGeometry', 0.11 * w, 0.14 * w, 0.62, 12), k.dark, 0, 0.18, 0),
+        mesh(geo('TorusGeometry', 0.115 * w, 0.02, 6, 14), k.glow, 0, 0.47, 0).rotateX(Math.PI / 2),
+        mesh(geo('TorusGeometry', 0.13 * w, 0.015, 6, 14), k.glow, 0, 0.1, 0).rotateX(Math.PI / 2),
+      );
+      const muzzle = new THREE.Object3D();
+      muzzle.position.set(0, 0.5, 0);
+      recoil.add(muzzle);
+      tube.add(recoil);
+      // Plasma canisters on the back
+      const canMat = STYLE.glow(branch === 'b' ? 0xff7ad9 : def.color, 2);
+      const cans = branch === 'b' ? 3 : 2;
+      for (let i = 0; i < cans; i++) {
+        const x = (i - (cans - 1) / 2) * 0.13;
+        head.add(mesh(geo('CylinderGeometry', 0.05, 0.05, 0.2, 10), canMat, x, 0.2, -0.24), mesh(geo('CylinderGeometry', 0.055, 0.055, 0.03, 10), k.trim, x, 0.31, -0.24));
+      }
+      head.add(table, cradleL, cradleR, tube);
+      g.add(head);
+      return finishTower(g, k, {
+        head, aims: true, recoil, recoilAxis: 'y', recoilScale: 1.4, muzzle, runeRing, height: 1.05,
+        anim(tw, dt, t) { canMat.emissiveIntensity = 1.6 + Math.sin(t * 4 + tw.id) * 0.5 + tw.recoil * 3; },
+      });
+    },
+
+    gravityWell(def, tier = 1, branch = null) {
+      const k = towerKit(def), g = new THREE.Group();
+      const runeRing = addBase(g, k);
+      for (let i = 0; i < 3; i++) {
+        const a = (i * Math.PI * 2) / 3 + 0.3;
+        g.add(strut(k.steel, V(Math.sin(a) * 0.3, 0.2, Math.cos(a) * 0.3), V(Math.sin(a) * 0.3, 1.0, Math.cos(a) * 0.3), 0.06));
+        g.add(mesh(geo('BoxGeometry', 0.03, 0.5, 0.03), k.glow, Math.sin(a) * 0.335, 0.6, Math.cos(a) * 0.335));
+        g.add(strut(k.plate, V(Math.sin(a) * 0.3, 1.0, Math.cos(a) * 0.3), V(0, 1.03, 0), 0.035));
+      }
+      const core = mesh(geo('SphereGeometry', 0.15, 20, 14), STYLE.matte(0x05040c, 0.3), 0, 0.68, 0);
+      const rimMat = STYLE.holo(branch === 'a' ? 0xff5fd2 : def.color, 0.4);
+      const rim = mesh(geo('SphereGeometry', 0.19, 20, 14), rimMat, 0, 0.68, 0);
+      const discMat = STYLE.holo(branch === 'a' ? 0xff5fd2 : def.color, 0.75, swirlTex);
+      const disc = mesh(geo('RingGeometry', 0.17, 0.46, 48), discMat, 0, 0.68, 0);
+      disc.rotation.x = -Math.PI / 2 + 0.25;
+      const disc2 = mesh(geo('RingGeometry', 0.22, 0.36, 48), STYLE.holo(0xffffff, 0.3, swirlTex), 0, 0.68, 0);
+      disc2.rotation.x = -Math.PI / 2 - 0.35;
+      noShadow(rim, disc, disc2);
+      g.add(core, rim, disc, disc2);
+      return finishTower(g, k, {
+        aims: false, runeRing, muzzleY: 0.68, height: 1.1,
+        anim(tw, dt, t) {
+          disc.rotation.z -= dt * (1.4 + tw.recoil * 6);
+          disc2.rotation.z += dt * 2.1;
+          const s = 1 - tw.recoil * 0.35 + Math.sin(t * 3) * 0.03;
+          rim.scale.setScalar(s);
+          rimMat.opacity = 0.35 + tw.recoil * 0.5;
+          discMat.opacity = 0.6 + Math.sin(t * 2 + tw.id) * 0.15;
+        },
+      });
+    },
+
+    droneHive(def, tier = 1, branch = null) {
+      const k = towerKit(def), g = new THREE.Group();
+      const runeRing = addBase(g, k);
+      const hive = mesh(geo('CylinderGeometry', 0.29, 0.34, 0.42, 6), k.dark, 0, 0.41, 0);
+      const cellMat = STYLE.glow(branch === 'b' ? 0xff5f74 : def.color, 1.6);
+      for (let i = 0; i < 6; i++) {
+        const a = (i / 6) * Math.PI * 2 + Math.PI / 6;
+        const p = mesh(geo('BoxGeometry', 0.16, 0.08, 0.012), cellMat, Math.sin(a) * 0.29, 0.47, Math.cos(a) * 0.29);
+        p.rotation.y = a;
+        const p2 = mesh(geo('BoxGeometry', 0.1, 0.06, 0.012), cellMat, Math.sin(a) * 0.3, 0.35, Math.cos(a) * 0.3);
+        p2.rotation.y = a;
+        g.add(p, p2);
+      }
+      const pad = mesh(geo('CylinderGeometry', 0.26, 0.29, 0.05, 6), k.plate, 0, 0.645, 0);
+      const padRing = mesh(geo('RingGeometry', 0.14, 0.2, 6), STYLE.holo(def.color, 0.8), 0, 0.674, 0);
+      padRing.rotation.x = -Math.PI / 2;
+      const mast = mesh(geo('CylinderGeometry', 0.012, 0.012, 0.3, 4), k.trim, 0.16, 0.82, -0.1);
+      const lamp = mesh(geo('SphereGeometry', 0.025, 8, 6), STYLE.glow(0xff4d5e, 2), 0.16, 0.98, -0.1);
+      noShadow(padRing);
+      g.add(hive, pad, padRing, mast, lamp);
+      return finishTower(g, k, {
+        aims: false, runeRing, muzzleY: 0.8, height: 1.0,
+        anim(tw, dt, t) { cellMat.emissiveIntensity = 1.3 + Math.sin(t * 3 + tw.id) * 0.4 + (tw.targetId ? 0.8 : 0); padRing.rotation.z += dt; lamp.material.emissiveIntensity = Math.sin(t * 5 + tw.id) > 0.3 ? 3 : 0.3; },
+      });
+    },
+
+    ionPulse(def, tier = 1, branch = null) {
+      const k = towerKit(def), g = new THREE.Group();
+      const runeRing = addBase(g, k);
+      const pillar = mesh(geo('CylinderGeometry', 0.12, 0.2, 0.38, 6), k.steel, 0, 0.39, 0);
+      const capRing = new THREE.Group();
+      capRing.position.y = 0.42;
+      const capMat = STYLE.glow(branch === 'b' ? 0xff5f9a : def.color, 1.8);
+      for (let i = 0; i < 6; i++) {
+        const a = (i / 6) * Math.PI * 2;
+        capRing.add(mesh(geo('CylinderGeometry', 0.035, 0.035, 0.16, 8), k.dark, Math.cos(a) * 0.25, 0, Math.sin(a) * 0.25), mesh(geo('CylinderGeometry', 0.037, 0.037, 0.04, 8), capMat, Math.cos(a) * 0.25, 0.04, Math.sin(a) * 0.25));
+      }
+      const dishMat = new THREE.MeshStandardMaterial({ color: STYLE.palette.plate, roughness: 0.3, metalness: 0.85, side: THREE.DoubleSide });
+      const dish = mesh(geo('SphereGeometry', 0.34, 20, 8, 0, Math.PI * 2, 0, 0.95), dishMat, 0, 0.98, 0);
+      dish.rotation.x = Math.PI;
+      const dishRim = mesh(geo('TorusGeometry', 0.276, 0.015, 4, 24), k.glow, 0, 0.78, 0);
+      dishRim.rotation.x = Math.PI / 2;
+      const needle = mesh(geo('CylinderGeometry', 0.015, 0.025, 0.3, 6), k.trim, 0, 0.82, 0);
+      const tipMat = STYLE.glow(branch === 'b' ? 0xff5f9a : def.color, 3);
+      const tip = mesh(geo('SphereGeometry', 0.05, 12, 8), tipMat, 0, 0.99, 0);
+      noShadow(dishRim);
+      g.add(pillar, capRing, dish, dishRim, needle, tip);
+      return finishTower(g, k, {
+        aims: false, runeRing, muzzleY: 0.99, height: 1.1,
+        anim(tw, dt, t) {
+          capRing.rotation.y += dt * (0.8 + tw.recoil * 5);
+          tipMat.emissiveIntensity = 2.4 + tw.recoil * 4 + Math.sin(t * 6 + tw.id) * 0.4;
+          capMat.emissiveIntensity = 1.4 + Math.max(0, Math.sin(t * 4 + tw.id)) * 1.2;
+          tip.scale.setScalar(1 + tw.recoil * 0.8);
+        },
+      });
     },
   },
   enemies: {
@@ -1334,6 +2086,8 @@ const state = {
   enemies: [],
   towers: [],
   projectiles: [],
+  zones: [],
+  blasts: [],
   stats: { kills: 0, earned: 0, leaked: 0 },
   endTimer: 0,
 };
@@ -1358,9 +2112,13 @@ function clearFx() {
 
 function resetGame() {
   for (const e of state.enemies) removeEnemyMesh(e);
-  for (const t of state.towers) { scene.remove(t.mesh); if (t.scanRing) scene.remove(t.scanRing); }
+  for (const t of state.towers) { scene.remove(t.mesh); removeTowerExtras(t); }
   for (const p of state.projectiles) releaseProjectileMesh(p.mesh);
+  for (const z of state.zones) scene.remove(z.mesh);
   clearFx();
+  Fx.clear();
+  state.zones = [];
+  state.blasts = [];
   state.enemies = [];
   state.towers = [];
   state.projectiles = [];
@@ -1369,6 +2127,7 @@ function resetGame() {
   state.waveIndex = 0;
   state.lives = map.def.startLives;
   state.coins = map.def.startCoins;
+  lastHud = {};
   state.stats = { kills: 0, earned: 0, leaked: 0 };
   state.endTimer = 0;
   state.paused = false;
@@ -1385,16 +2144,16 @@ function startWave() {
   if (state.phase !== 'ready') return;
   const wave = map.def.waves[state.waveIndex];
   if (!wave) return;
-  state.spawners = wave.groups.map((g) => ({ enemy: g.enemy, remaining: g.count, interval: g.interval, timer: g.delay || 0 }));
+  state.spawners = wave.groups.map((g) => ({ enemy: g.enemy, remaining: g.count, interval: g.interval, timer: g.delay || 0, hp: g.hp || 1 }));
   state.waveIndex++;
   state.phase = 'wave';
-  const sub = wave.groups.map((g) => `${g.count} ${CONTENT.enemies[g.enemy].name}s`).join(' · ');
+  const sub = waveText(wave);
   banner(`WAVE ${state.waveIndex} INCOMING`, sub);
   Events.emit('waveStart', { index: state.waveIndex });
   updateHud();
 }
 
-function spawnEnemy(key) {
+function spawnEnemy(key, hpMult = 1) {
   const def = CONTENT.enemies[key];
   const bodyMat = new THREE.MeshStandardMaterial({ color: def.color, roughness: 0.65 });
   const mesh = MODELS.enemies[def.model](def, bodyMat);
@@ -1402,7 +2161,11 @@ function spawnEnemy(key) {
   mesh.add(hb.group);
   scene.add(mesh);
   const e = {
-    id: nextId++, key, def, hp: def.health, maxHp: def.health, dist: 0, alive: true,
+    id: nextId++, key, def, hp: def.health * hpMult, maxHp: def.health * hpMult, dist: 0, alive: true,
+    slowAmt: 0, slowT: 0, vulnAmt: 0, vulnT: 0, shredAmt: 0, shredT: 0, eVulnAmt: 0, eVulnT: 0,
+    burnAmt: 0, burnT: 0, burnSrc: null, bleedAmt: 0, bleedT: 0, bleedSrc: null, bleedSpread: 0, bleedMax: 0,
+    holdT: 0, holdKind: '', chill: 0, chillT: 0, freezeCd: 0, interruptCd: 0, shove: 0, curSpeed: def.speed,
+    shield: def.shield || 0, maxShield: def.shield || 0,
     pos: new THREE.Vector3(), prev: new THREE.Vector3(), yaw: 0,
     mesh, bodyMat, hb, flash: 0, anim: Math.random() * 6, spawnT: 0,
   };
@@ -1451,30 +2214,235 @@ function makeHealthBar() {
   return { group, fill, fillMat };
 }
 
-/* ---------- Damage ---------- */
-function damageEnemy(e, amount, type, sourceTower) {
-  if (!e.alive) return;
-  const mult = e.def.resist && e.def.resist[type] != null ? e.def.resist[type] : 1;
-  const dmg = Math.max(1, amount * mult - (e.def.armor || 0));
-  e.hp -= dmg;
-  e.flash = 1;
-  Events.emit('enemyHit', { enemy: e, damage: dmg, type });
-  if (e.hp <= 0) killEnemy(e, sourceTower);
+/* =====================================================================
+   FX — pooled beams, lightning, rings and flashes (visual only)
+   ===================================================================== */
+const Fx = (() => {
+  const segGeo = new THREE.BoxGeometry(1, 1, 1).translate(0, 0, 0.5);
+  const ringGeos = { thin: new THREE.RingGeometry(0.95, 1, 64), thick: new THREE.RingGeometry(0.8, 1, 64) };
+  const live = [];
+  const pools = { seg: [], thin: [], thick: [], flash: [], disc: [] };
+  const addMat = () => new THREE.MeshBasicMaterial({ transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false });
+  function take(kind) {
+    let m = pools[kind].pop();
+    if (!m) {
+      if (kind === 'seg') m = new THREE.Mesh(segGeo, addMat());
+      else if (kind === 'flash') m = new THREE.Sprite(new THREE.SpriteMaterial({ map: dotTex, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }));
+      else if (kind === 'disc') { m = new THREE.Mesh(new THREE.CircleGeometry(1, 40), addMat()); m.material.map = dotTex; m.rotation.x = -Math.PI / 2; }
+      else { m = new THREE.Mesh(ringGeos[kind], addMat()); m.rotation.x = -Math.PI / 2; }
+      m.frustumCulled = false;
+      m.userData.kind = kind;
+    }
+    m.renderOrder = 8;
+    m.visible = true;
+    scene.add(m);
+    return m;
+  }
+  const place = (m, a, b, w) => { m.position.copy(a); m.lookAt(b); m.scale.set(w, w, Math.max(0.001, a.distanceTo(b))); };
+  const pts = [];
+  return {
+    place,
+    makeSeg(color) { const m = new THREE.Mesh(segGeo, addMat()); m.material.color.set(color); m.frustumCulled = false; m.renderOrder = 8; return m; },
+    seg(a, b, color, width, life, opacity = 1) {
+      const m = take('seg');
+      place(m, a, b, width);
+      m.material.color.set(color);
+      m.material.opacity = opacity;
+      live.push({ m, life, max: life, op: opacity, type: 'fade' });
+    },
+    /* Jagged bolt: a bright core and a soft coloured glow */
+    lightning(a, b, color, life = 0.14, jag = 0.13, op = 1) {
+      const d = a.distanceTo(b);
+      const n = Math.max(2, Math.round(d / 0.22));
+      pts.length = 0;
+      for (let i = 0; i <= n; i++) {
+        const p = new THREE.Vector3().lerpVectors(a, b, i / n);
+        if (i > 0 && i < n) { p.x += (Math.random() - 0.5) * jag * 2; p.y += (Math.random() - 0.5) * jag * 1.4; p.z += (Math.random() - 0.5) * jag * 2; }
+        pts.push(p);
+      }
+      for (let i = 0; i < n; i++) {
+        this.seg(pts[i], pts[i + 1], 0xeaf8ff, 0.028, life, op);
+        this.seg(pts[i], pts[i + 1], color, 0.1, life, 0.5 * op);
+      }
+    },
+    /* Ground ring that grows (or shrinks) from r0 to r1 */
+    ring(at, r0, r1, color, life, { y = TILE_H + 0.03, opacity = 0.9, thick = false } = {}) {
+      const m = take(thick ? 'thick' : 'thin');
+      m.position.set(at.x, y, at.z);
+      m.material.color.set(color);
+      m.material.opacity = opacity;
+      m.scale.setScalar(Math.max(0.01, r0));
+      live.push({ m, life, max: life, op: opacity, type: 'ring', r0, r1 });
+    },
+    flash(at, color, size, life = 0.25) {
+      const m = take('flash');
+      m.position.copy(at);
+      m.material.color.set(color);
+      m.material.opacity = 1;
+      m.scale.setScalar(size * 0.4);
+      live.push({ m, life, max: life, op: 1, type: 'flash', size });
+    },
+    disc(at, radius, color, life, opacity = 0.7) {
+      const m = take('disc');
+      m.position.set(at.x, TILE_H + 0.02, at.z);
+      m.material.color.set(color);
+      m.material.opacity = opacity;
+      m.scale.setScalar(radius * 0.4);
+      live.push({ m, life, max: life, op: opacity, type: 'disc', size: radius });
+    },
+    update(dt) {
+      for (let i = live.length - 1; i >= 0; i--) {
+        const f = live[i];
+        f.life -= dt;
+        const k = 1 - Math.max(0, f.life) / f.max;   // 0 -> 1
+        if (f.type === 'ring') { f.m.scale.setScalar(Math.max(0.01, f.r0 + (f.r1 - f.r0) * (1 - Math.pow(1 - k, 2)))); f.m.material.opacity = f.op * (1 - k); }
+        else if (f.type === 'flash') { f.m.scale.setScalar(f.size * (0.4 + k * 0.9)); f.m.material.opacity = 1 - k; }
+        else if (f.type === 'disc') { f.m.scale.setScalar(f.size * Math.min(1, 0.4 + k * 3)); f.m.material.opacity = f.op * (k < 0.8 ? 1 : (1 - k) / 0.2); }
+        else f.m.material.opacity = f.op * (1 - k) * (Math.random() < 0.85 ? 1 : 0.4);
+        if (f.life <= 0) { scene.remove(f.m); pools[f.m.userData.kind].push(f.m); live.splice(i, 1); }
+      }
+    },
+    clear() { for (const f of live) { scene.remove(f.m); pools[f.m.userData.kind].push(f.m); } live.length = 0; },
+  };
+})();
+
+/* ---------- Tower stats, buffs and upgrade costs ---------- */
+const DAMAGE_TYPES = { pierce: 'Pierce', magic: 'Magic', energy: 'Energy', blast: 'Blast' };
+const TARGETING = [['first', 'First', 'Furthest along the path'], ['last', 'Last', 'Closest to the gate'], ['strong', 'Strong', 'Most health'], ['close', 'Close', 'Nearest to the tower']];
+const TOWER_RULES = { tier2Cost: 1.2, tier3Cost: 2, sellRefund: 0.7 };
+
+function towerStats(def, tier, branch) {
+  const s = { ...def.stats };
+  if (branch) for (let i = 0; i < tier - 1; i++) Object.assign(s, def.branches[branch].tiers[i].stats);
+  return s;
+}
+function upgradeCost(def, nextTier) {
+  return Math.round((def.cost * (nextTier === 2 ? TOWER_RULES.tier2Cost : TOWER_RULES.tier3Cost)) / 5) * 5;
+}
+const noBuff = () => ({ damage: 0, rate: 0, range: 0, trueSight: false, from: 0 });
+const tRange = (t) => t.s.range * (1 + t.buff.range);
+const tDmg = (t) => 1 + t.buff.damage;
+const tRate = (t) => (t.s.fireRate || 1) * (1 + t.buff.rate);
+const tInterval = (t) => t.s.interval / (1 + t.buff.rate);
+
+/* Rune Shrines: each tower takes the strongest boost on offer (they don't stack) */
+function updateBuffs() {
+  for (const t of state.towers) {
+    const b = t.buff;
+    b.damage = b.rate = b.range = 0; b.trueSight = false; b.from = 0;
+  }
+  for (const sh of state.towers) {
+    if (sh.def.attack !== 'support') continue;
+    const r = sh.s.range, s = sh.s;
+    for (const t of state.towers) {
+      if (t === sh || t.def.attack === 'support') continue;
+      const dx = t.pos.x - sh.pos.x, dz = t.pos.z - sh.pos.z;
+      if (dx * dx + dz * dz > r * r + 0.01) continue;
+      const b = t.buff;
+      b.damage = Math.max(b.damage, s.buffDamage || 0);
+      b.rate = Math.max(b.rate, s.buffRate || 0);
+      b.range = Math.max(b.range, s.buffRange || 0);
+      b.trueSight = b.trueSight || !!s.trueSight;
+      b.from++;
+    }
+  }
 }
 
-function killEnemy(e, sourceTower) {
+/* ---------- Enemy status effects ----------
+   slow, vuln (takes more damage), shred (armor removed), eVuln (more energy damage),
+   burn and bleed (damage over time). A stronger effect replaces a weaker one;
+   an equal one refreshes the timer. */
+function addEffect(e, kind, amt, time) {
+  const A = kind + 'Amt', T = kind + 'T';
+  if (amt > e[A] + 1e-6 || e[T] <= 0) { e[A] = amt; e[T] = time; }
+  else if (amt >= e[A] - 1e-6) e[T] = Math.max(e[T], time);
+}
+function hold(e, kind, time) {
+  if (!e.alive || (e.def.boss && kind !== 'stun')) time *= 0.5;
+  if (time > e.holdT) { e.holdT = time; e.holdKind = kind; }
+}
+const canHit = (t, e) => e.alive && (t.s.air || !e.def.flying);
+const flatDist2 = (a, b) => { const dx = a.x - b.x, dz = a.z - b.z; return dx * dx + dz * dz; };
+const hitPoint = (e, out) => out.set(e.pos.x, e.pos.y + e.def.hitHeight, e.pos.z);
+function enemySpeed(e) {
+  if (e.holdT > 0) return 0;
+  return e.def.speed * (1 - (e.slowT > 0 ? e.slowAmt : 0));
+}
+function predictPos(e, time, out) {
+  samplePath(map, Math.min(map.total, e.dist + enemySpeed(e) * time), out);
+  return out;
+}
+
+/* ---------- Damage ---------- */
+/* o.cont: continuous damage (beams, burns, auras) — skips flat armor and the 1-damage floor */
+function damageEnemy(e, amount, type, src, o = {}) {
+  if (!e.alive || amount <= 0) return 0;
+  if (!o.cont && e.def.dodge && !(src && src.buff && src.buff.trueSight) && Math.random() < e.def.dodge) {
+    Floaters.add('MISS', tmpV.copy(e.pos).setY(0.9), '');
+    return 0;
+  }
+  let mult = e.def.resist && e.def.resist[type] != null ? e.def.resist[type] : 1;
+  if (e.vulnT > 0) mult *= 1 + e.vulnAmt;
+  if (type === 'energy' && e.eVulnT > 0) mult *= 1 + e.eVulnAmt;
+  if (o.boss && e.def.boss) mult *= 1 + o.boss;
+  let dmg = amount * mult;
+  if (e.shield > 0) {
+    const k = 1 + (o.shieldBonus || 0);
+    const soak = Math.min(e.shield, dmg * k);
+    e.shield -= soak;
+    dmg -= soak / k;
+  }
+  if (!o.cont && dmg > 0) {
+    const armor = Math.max(0, (e.def.armor || 0) - (e.shredT > 0 ? e.shredAmt : 0)) * (1 - (o.ignoreArmor || 0));
+    dmg = Math.max(1, dmg - armor);
+  }
+  e.hp -= dmg;
+  if (o.cont) e.flash = Math.max(e.flash, 0.3); else e.flash = 1;
+  if (src) src.dealt += dmg;
+  Events.emit('enemyHit', { enemy: e, damage: dmg, type });
+  if (e.hp <= 0) killEnemy(e, src);
+  return dmg;
+}
+
+/* Area damage on the ground (and in the air when allowed) */
+function splashAt(at, radius, damage, type, src, o = {}) {
+  const r2 = (radius + 0.18) * (radius + 0.18);
+  let hits = 0;
+  for (const e of state.enemies) {
+    if (!e.alive || (o.groundOnly && e.def.flying)) continue;
+    if (flatDist2(e.pos, at) > r2) continue;
+    hits++;
+    if (o.onHit) o.onHit(e);
+    damageEnemy(e, damage, type, src, o);
+  }
+  return hits;
+}
+
+function killEnemy(e, src) {
   e.alive = false;
   e.dissolve = true;
   state.coins += e.def.reward;
   state.stats.kills++;
   state.stats.earned += e.def.reward;
-  if (sourceTower) sourceTower.kills++;
+  if (src) src.kills++;
   const at = tmpV.copy(e.pos).setY(0.35);
   Particles.burst(at, { count: 10, color: e.def.color, speed: 1.8, up: 1.6, lifeTime: 0.5 });
   Particles.burst(at, { count: 8, color: STYLE.palette.holo, speed: 0.6, up: 2.4, lifeTime: 0.8, gravity: -0.5 });
   Particles.burst(at, { count: 6, color: 0xffcf5a, speed: 1, up: 2.6, lifeTime: 0.7, gravity: 4 });
   Floaters.add('+' + e.def.reward, at.clone().setY(0.8), 'gold');
   bumpPill('coins-pill');
+  // Phoenix: the kill explodes (queued, so chain reactions resolve one step at a time)
+  if (src && src.s.explode && src.def.attack === 'shot') state.blasts.push({ pos: e.pos.clone(), radius: 1.0, damage: src.s.explode * tDmg(src), type: src.s.damageType, src, color: 0xff6aa8, air: src.s.air });
+  // Barbs: bleed jumps to enemies close by
+  if (e.bleedT > 0 && e.bleedSpread > 0) {
+    const r2 = e.bleedSpread * e.bleedSpread;
+    for (const o of state.enemies) {
+      if (o === e || !o.alive || o.def.flying || flatDist2(o.pos, e.pos) > r2) continue;
+      addEffect(o, 'bleed', e.bleedAmt, e.bleedMax);
+      o.bleedSrc = e.bleedSrc; o.bleedSpread = e.bleedSpread; o.bleedMax = e.bleedMax;
+      Fx.seg(tmpV.copy(e.pos).setY(0.3), o.pos.clone().setY(0.3), 0xff5f74, 0.04, 0.25, 0.8);
+    }
+  }
   Events.emit('enemyKilled', { enemy: e });
 }
 
@@ -1503,21 +2471,36 @@ function canBuildAt(c, r, key) {
 }
 function towerAt(c, r) { return state.towers.find((t) => t.c === c && t.r === r) || null; }
 
+/* Builds a tower's model for its tier and branch, ready to scan in */
+function makeTowerMesh(t) {
+  const m = MODELS.towers[t.def.model](t.def, t.tier, t.branch);
+  addTierDecor(m, t.def, t.tier, t.branch);
+  m.position.copy(t.pos);
+  ownMaterials(m);
+  t.clip = new THREE.Plane(new THREE.Vector3(0, -1, 0), t.pos.y);
+  m.traverse((o) => { if (o.material) o.material.clippingPlanes = [t.clip]; });
+  m.userData.towerId = t.id;
+  scene.add(m);
+  if (t.scanRing) { scene.remove(t.scanRing); t.scanRing.material.dispose(); }
+  t.scanRing = makeScanRing(t.tier >= 2 ? t.def.branches[t.branch].color : t.def.color);
+  t.scanRing.scale.setScalar((m.userData.radius || 0.45) * m.scale.x);
+  t.popT = 0;
+  return m;
+}
+
 function buildTower(c, r, key) {
   const def = CONTENT.towers[key];
-  const mesh = MODELS.towers[def.model](def);
   const pos = map.toWorld(c, r, TILE_H);
-  mesh.position.copy(pos);
-  ownMaterials(mesh);
-  const clip = new THREE.Plane(new THREE.Vector3(0, -1, 0), pos.y);
-  mesh.traverse((o) => { if (o.material) o.material.clippingPlanes = [clip]; });
-  scene.add(mesh);
-  const scanRing = makeScanRing(def.color);
-  scanRing.scale.setScalar(mesh.userData.radius || 0.45);
-  const t = { id: nextId++, key, def, c, r, pos, mesh, clip, scanRing, cooldown: 0.45, targetId: 0, kills: 0, spent: def.cost, yaw: 0, recoil: 0, popT: 0 };
-  mesh.userData.towerId = t.id;
+  const t = {
+    id: nextId++, key, def, c, r, pos, tier: 1, branch: null, s: towerStats(def, 1, null), buff: noBuff(),
+    mesh: null, clip: null, scanRing: null, cooldown: 0.45, targetId: 0, kills: 0, dealt: 0, spent: def.cost,
+    yaw: 0, recoil: 0, popT: 0, targeting: 'first', shotCount: 0, ramp: 0, beamTargets: [], drones: [],
+    active: false, rootCd: 2,
+  };
+  t.mesh = makeTowerMesh(t);
   state.towers.push(t);
   state.coins -= def.cost;
+  syncDrones(t);
   Particles.burst(tmpV.copy(pos).setY(TILE_H + 0.05), { count: 16, color: def.color, speed: 1.8, up: 0.5, lifeTime: 0.45, gravity: 2 });
   Particles.burst(tmpV.copy(pos).setY(0.5), { count: 10, color: STYLE.palette.rune, speed: 0.6, up: 2.2, lifeTime: 0.8, gravity: 0 });
   Events.emit('towerBuilt', { tower: t });
@@ -1525,13 +2508,54 @@ function buildTower(c, r, key) {
   return t;
 }
 
-function sellTower(t) {
-  const refund = Math.floor(t.spent * t.def.sellRefund);
-  state.coins += refund;
+function upgradeTower(t, branch) {
+  if (!state.towers.includes(t) || t.tier >= 3) return false;
+  const next = t.tier + 1;
+  const br = next === 2 ? branch : t.branch;
+  if (!br || !t.def.branches[br]) return false;
+  const cost = upgradeCost(t.def, next);
+  if (state.coins < cost) { toast(`Need ${cost - state.coins} more coins`, 'warn'); return false; }
+  state.coins -= cost;
+  t.spent += cost;
+  t.tier = next;
+  t.branch = br;
+  t.s = towerStats(t.def, t.tier, t.branch);
+  t.anchors = null;
+  // Swap in the upgraded model and print it in again
+  const old = t.mesh;
+  scene.remove(old);
+  old.traverse((o) => { if (o.material) o.material.dispose(); });
+  t.mesh = makeTowerMesh(t);
+  t.mesh.userData.head && (t.mesh.userData.head.rotation.y = t.yaw);
+  syncDrones(t);
+  const bc = t.def.branches[br].color;
+  const at = t.pos.clone().setY(0.6);
+  Particles.burst(at, { count: 22, color: bc, speed: 2, up: 2.2, lifeTime: 0.7, gravity: 1 });
+  Particles.burst(at, { count: 12, color: 0xffffff, speed: 0.8, up: 3, lifeTime: 0.6, gravity: 0 });
+  Fx.ring(t.pos, 0.2, 1.3, bc, 0.5, { thick: true });
+  Fx.flash(at, bc, 1.6, 0.35);
+  Floaters.add(`TIER ${t.tier}`, at.clone().setY(1.4), 'up');
+  Events.emit('towerUpgraded', { tower: t });
+  updateHud();
+  renderInfo(true);
+  return true;
+}
+
+function removeTowerExtras(t) {
+  for (const d of t.drones) scene.remove(d.mesh);
+  t.drones = [];
+  if (t.beamFx) { t.beamFx.forEach((b) => { scene.remove(b.core, b.glow); b.core.material.dispose(); b.glow.material.dispose(); }); t.beamFx = null; }
+  if (t.buffRing) { scene.remove(t.buffRing); t.buffRing.material.dispose(); t.buffRing = null; }
   if (t.scanRing) { scene.remove(t.scanRing); t.scanRing = null; }
+}
+
+function sellTower(t) {
+  const refund = Math.floor(t.spent * TOWER_RULES.sellRefund);
+  state.coins += refund;
+  removeTowerExtras(t);
   const ring = makeScanRing(t.def.color);
-  ring.scale.setScalar(t.mesh.userData.radius || 0.45);
-  const top = t.pos.y + (t.mesh.userData.height || 1) + 0.05;
+  ring.scale.setScalar((t.mesh.userData.radius || 0.45) * t.mesh.scale.x);
+  const top = t.pos.y + (t.mesh.userData.height || 1) * t.mesh.scale.y + 0.05;
   t.clip.constant = top;
   t.mesh.traverse((o) => { if (o.material && o.material.emissive) { o.material.emissive.setHex(t.def.color); o.material.emissiveIntensity = Math.max(o.material.emissiveIntensity, 0.5); } });
   fx.vanishing.push({ mesh: t.mesh, clip: t.clip, ring, top, base: t.pos.y, t: 0, dur: 0.42 });
@@ -1546,59 +2570,498 @@ function sellTower(t) {
   updateHud();
 }
 
-function findTarget(t) {
-  const r2 = t.def.range * t.def.range;
-  let best = null;
-  for (const e of state.enemies) {
-    if (!e.alive) continue;
-    const dx = e.pos.x - t.pos.x, dz = e.pos.z - t.pos.z;
-    if (dx * dx + dz * dz > r2) continue;
-    if (!best || e.dist > best.dist) best = e;   // 'first' targeting
-  }
-  return best;
+function setTargeting(t, mode) {
+  t.targeting = mode;
+  t.ramp = t.s.keepCharge ? t.ramp : 0;
+  renderInfo(true);
 }
 
-/* ---------- Projectiles (meshes are pooled) ---------- */
-const projectilePool = [];
+/* Up to n enemies in range, best first by the tower's targeting choice */
+const candidates = [];
+function pickTargets(t, n = 1, range = tRange(t), minRange = 0) {
+  candidates.length = 0;
+  const r2 = range * range, m2 = minRange * minRange;
+  for (const e of state.enemies) {
+    if (!canHit(t, e)) continue;
+    const d2 = flatDist2(e.pos, t.pos);
+    if (d2 > r2 || d2 < m2) continue;
+    e._d2 = d2;
+    candidates.push(e);
+  }
+  if (!candidates.length) return candidates;
+  const mode = t.targeting;
+  const score = mode === 'last' ? (e) => -e.dist : mode === 'strong' ? (e) => e.hp * 1000 + e.dist : mode === 'close' ? (e) => -e._d2 : (e) => e.dist;
+  if (n === 1) {
+    let best = candidates[0], bs = score(best);
+    for (let i = 1; i < candidates.length; i++) { const s = score(candidates[i]); if (s > bs) { bs = s; best = candidates[i]; } }
+    candidates.length = 1; candidates[0] = best;
+    return candidates;
+  }
+  candidates.sort((a, b) => score(b) - score(a));
+  if (candidates.length > n) candidates.length = n;
+  return candidates;
+}
+function anyInRange(t, range = tRange(t)) {
+  const r2 = range * range;
+  for (const e of state.enemies) if (canHit(t, e) && flatDist2(e.pos, t.pos) <= r2) return true;
+  return false;
+}
+
+const muzzleV = new THREE.Vector3();
+function muzzleOf(t, out = muzzleV) {
+  const u = t.mesh.userData;
+  if (u.muzzle) { t.mesh.updateMatrixWorld(true); return u.muzzle.getWorldPosition(out); }
+  return out.set(t.pos.x, t.pos.y + (u.muzzleY || 0.8) * t.mesh.scale.y, t.pos.z);
+}
+
+/* ---------- Projectiles (meshes are pooled by look) ---------- */
+const projectilePools = { arrow: [], orb: [] };
 const arrowGeo = new THREE.CylinderGeometry(0.018, 0.018, 0.36, 5).rotateX(Math.PI / 2);
 const tipGeo = new THREE.ConeGeometry(0.045, 0.11, 6).rotateX(Math.PI / 2).translate(0, 0, 0.22);
-function getProjectileMesh(color) {
-  let m = projectilePool.pop();
+const orbGeo = new THREE.SphereGeometry(0.07, 10, 8);
+function getProjectileMesh(look, color, size = 1) {
+  let m = projectilePools[look].pop();
   if (!m) {
     m = new THREE.Group();
-    const shaftMat = new THREE.MeshBasicMaterial({ color: 0xffffff, toneMapped: false });
-    const tipMat = new THREE.MeshBasicMaterial({ color, toneMapped: false });
+    const coreMat = new THREE.MeshBasicMaterial({ color: 0xffffff, toneMapped: false });
     const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: dotTex, color, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
-    glow.scale.setScalar(0.42);
-    glow.position.z = 0.18;
-    m.add(new THREE.Mesh(arrowGeo, shaftMat), new THREE.Mesh(tipGeo, tipMat), glow);
-    m.userData = { tipMat, glow };
+    let tipMat = null;
+    if (look === 'arrow') {
+      tipMat = new THREE.MeshBasicMaterial({ color, toneMapped: false });
+      glow.scale.setScalar(0.42); glow.position.z = 0.18;
+      m.add(new THREE.Mesh(arrowGeo, coreMat), new THREE.Mesh(tipGeo, tipMat), glow);
+    } else {
+      glow.scale.setScalar(0.55);
+      m.add(new THREE.Mesh(orbGeo, coreMat), glow);
+    }
+    m.userData = { look, tipMat, coreMat, glow };
   }
-  m.userData.tipMat.color.set(color);
-  m.userData.glow.material.color.set(color);
+  const u = m.userData;
+  if (u.tipMat) u.tipMat.color.set(color);
+  u.glow.material.color.set(color);
+  u.coreMat.color.set(look === 'orb' ? new THREE.Color(color).lerp(new THREE.Color(0xffffff), 0.6) : 0xffffff);
+  m.scale.setScalar(size);
   m.visible = true;
   scene.add(m);
   return m;
 }
-function releaseProjectileMesh(m) { scene.remove(m); projectilePool.push(m); }
+function releaseProjectileMesh(m) { scene.remove(m); projectilePools[m.userData.look].push(m); }
 
-function fire(t, target) {
-  const muzzle = new THREE.Vector3(t.pos.x, t.pos.y + t.mesh.userData.muzzleY, t.pos.z);
-  const p = {
-    tower: t, targetId: target.id, target, damage: t.def.damage, type: t.def.damageType, speed: t.def.projectileSpeed,
-    pos: muzzle.clone(), prev: muzzle.clone(), aim: target.pos.clone().setY(target.pos.y + target.def.hitHeight),
-    mesh: getProjectileMesh(t.def.color), age: 0,
-  };
+function addProjectile(p) {
+  p.prev = p.pos.clone();
+  p.age = 0;
   p.mesh.position.copy(p.pos);
-  p.mesh.lookAt(p.aim);
+  if (p.aim) p.mesh.lookAt(p.aim);
   state.projectiles.push(p);
+  return p;
+}
+
+/* Homing shot: arrows, fireballs and drone missiles */
+function fireShot(t, target, from) {
+  const s = t.s;
+  t.shotCount++;
+  const crit = s.critEvery && t.shotCount % s.critEvery === 0;
+  const kind = t.def.projectile;
+  const look = kind === 'arrow' ? 'arrow' : 'orb';
+  const color = crit ? 0xffcf5a : kind === 'fireball' && t.branch === 'b' ? 0xff6aa8 : t.def.color;
+  addProjectile({
+    kind, tower: t, target, color, crit,
+    damage: s.damage * tDmg(t) * (crit ? s.critMult : 1), type: s.damageType, speed: s.speed,
+    pos: (from || muzzleOf(t)).clone(), aim: hitPoint(target, new THREE.Vector3()),
+    mesh: getProjectileMesh(look, color, kind === 'fireball' ? 1.25 : crit ? 1.35 : 1),
+  });
+}
+
+/* Ballista bolt: flies straight, hitting every enemy on its line up to `pierce` */
+function fireBolt(t, target) {
+  const s = t.s;
+  const from = muzzleOf(t).clone();
+  const lead = predictPos(target, from.distanceTo(target.pos) / s.speed, new THREE.Vector3());
+  lead.y = target.pos.y + target.def.hitHeight;
+  const dir = lead.sub(from).normalize();
+  const aim = from.clone().addScaledVector(dir, 10);
+  addProjectile({
+    kind: 'bolt', tower: t, color: t.def.color, damage: s.damage * tDmg(t), type: s.damageType, speed: s.speed,
+    pos: from, dir, aim, travel: 0, maxTravel: tRange(t) + 1.2, hit: new Set(), pierceLeft: s.pierce,
+    mesh: getProjectileMesh('arrow', t.branch === 'a' ? 0xff9a3a : t.def.color, 1.9),
+  });
+}
+
+/* Mortar shell: lobbed at where the target will be when it lands */
+function fireShell(t, target, o = {}) {
+  const s = t.s;
+  const from = o.from ? o.from.clone() : muzzleOf(t).clone();
+  const flight = o.flight || 1.05 + Math.sqrt(flatDist2(from, target ? target.pos : o.to)) * 0.08;
+  const to = o.to ? o.to.clone() : predictPos(target, flight, new THREE.Vector3());
+  to.y = PATH_H;
+  addProjectile({
+    kind: 'shell', tower: t, color: o.color || t.def.color, from, to, flight, arc: o.arc || 1.4 + Math.sqrt(flatDist2(from, to)) * 0.18,
+    damage: (o.damage || s.damage) * tDmg(t), splash: o.splash || s.splash, type: s.damageType, bomblet: !!o.bomblet,
+    pos: from.clone(), aim: to.clone(), mesh: getProjectileMesh('orb', o.color || t.def.color, o.bomblet ? 0.6 : 1.5),
+  });
+}
+
+function shellLanded(p) {
+  const t = p.tower, s = t.s;
+  const hits = splashAt(p.to, p.splash, p.damage, p.type, t, {
+    groundOnly: true,
+    onHit: s.shred && !p.bomblet ? (e) => addEffect(e, 'shred', s.shred, s.shredTime || 4) : null,
+  });
+  Fx.ring(p.to, 0.2, p.splash, p.color, p.bomblet ? 0.3 : 0.45, { thick: true });
+  Fx.flash(tmpV.copy(p.to).setY(0.35), p.color, p.bomblet ? 0.9 : 2.2, p.bomblet ? 0.2 : 0.32);
+  Fx.disc(p.to, p.splash * 0.9, p.color, p.bomblet ? 0.25 : 0.5, 0.45);
+  Particles.burst(tmpV.copy(p.to).setY(0.25), { count: p.bomblet ? 6 : 22, color: p.color, speed: p.bomblet ? 1.5 : 3.2, up: 2.2, lifeTime: 0.55, gravity: 5 });
+  if (!p.bomblet) {
+    Particles.burst(tmpV.copy(p.to).setY(0.3), { count: 10, color: 0xffffff, speed: 1.2, up: 1.5, lifeTime: 0.3, gravity: 2 });
+    if (Save.data.settings.shake && hits > 0) camShake = Math.min(1, camShake + 0.12);
+    if (s.bomblets) {
+      for (let i = 0; i < s.bomblets; i++) {
+        const a = (i / s.bomblets) * Math.PI * 2 + Math.random() * 0.6, r = 0.55 + Math.random() * 0.75;
+        fireShell(t, null, { from: tmpV.copy(p.to).setY(0.3), to: new THREE.Vector3(p.to.x + Math.cos(a) * r, 0, p.to.z + Math.sin(a) * r), flight: 0.32 + Math.random() * 0.18, arc: 0.55, damage: s.bombletDamage, splash: 0.6, bomblet: true, color: 0xff7ad9 });
+      }
+    }
+  }
+  Events.emit('explosion', { at: p.to, big: !p.bomblet });
+}
+
+/* Impact of a homing shot */
+function shotLanded(p) {
+  const t = p.tower, s = t.s;
+  if (p.kind === 'fireball') {
+    splashAt(p.pos, s.splash, p.damage, p.type, t, { groundOnly: !s.air, onHit: (e) => { if (!e.def.flying || s.air) { addEffect(e, 'burn', s.burnDps * tDmg(t), s.burnTime); e.burnSrc = t; } } });
+    Fx.ring(p.pos, 0.1, s.splash, p.color, 0.35, { thick: true });
+    Fx.flash(p.pos, p.color, 1.5, 0.25);
+    Particles.burst(p.pos, { count: 14, color: p.color, speed: 2.2, up: 1.8, lifeTime: 0.5, gravity: 3 });
+    if (s.firePatch) state.zones.push({ pos: new THREE.Vector3(p.pos.x, 0, p.pos.z), radius: s.splash * 0.8, time: s.firePatch, tower: t, mesh: makeZoneMesh(s.splash * 0.8, 0xff7a2e) });
+  } else if (p.kind === 'missile') {
+    splashAt(p.pos, s.splash, p.damage, p.type, t, { boss: s.bossBonus });
+    Fx.flash(p.pos, p.color, 1.1, 0.22);
+    Fx.ring(p.pos, 0.1, s.splash, p.color, 0.3);
+    Particles.burst(p.pos, { count: 10, color: p.color, speed: 2.2, up: 1.4, lifeTime: 0.4, gravity: 4 });
+  } else {
+    if (p.target.alive) {
+      damageEnemy(p.target, p.damage, p.type, t, { boss: s.bossBonus });
+      if (p.crit) { Floaters.add(Math.round(p.damage) + '!', tmpV.copy(p.pos).setY(p.pos.y + 0.4), 'gold'); Fx.flash(p.pos, 0xffcf5a, 1.2, 0.25); }
+    }
+    Particles.burst(p.pos, { count: 8, color: p.color, speed: 2.8, up: 1.1, lifeTime: 0.26, gravity: 6 });
+    Particles.burst(p.pos, { count: 3, color: 0xffffff, speed: 0.6, up: 0.4, lifeTime: 0.14, gravity: 0 });
+  }
+}
+
+/* Burning ground left by Inferno fireballs */
+function makeZoneMesh(radius, color) {
+  const g = new THREE.Group();
+  const disc = new THREE.Mesh(new THREE.CircleGeometry(radius, 32), new THREE.MeshBasicMaterial({ color, map: dotTex, transparent: true, opacity: 0.6, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }));
+  disc.rotation.x = -Math.PI / 2;
+  disc.position.y = PATH_H + 0.02;
+  disc.renderOrder = 4;
+  g.add(disc);
+  g.userData.disc = disc;
+  scene.add(g);
+  return g;
+}
+
+/* ---------- Chain lightning ---------- */
+function fireChain(t, first) {
+  const s = t.s;
+  const from = muzzleOf(t).clone();
+  let cur = first, prevPt = from, dmg = s.damage * tDmg(t);
+  const hit = new Set();
+  const jump2 = s.jump * s.jump;
+  for (let i = 0; i < s.chains && cur; i++) {
+    hit.add(cur);
+    const pt = hitPoint(cur, new THREE.Vector3());
+    Fx.lightning(prevPt, pt, t.def.color, 0.16, i === 0 ? 0.16 : 0.12);
+    Fx.flash(pt, t.def.color, 0.8, 0.18);
+    Particles.burst(pt, { count: 5, color: 0xdff4ff, speed: 2, up: 1, lifeTime: 0.2, gravity: 2 });
+    const target = cur;
+    damageEnemy(target, dmg, s.damageType, t, { shieldBonus: s.shieldBonus });
+    if (s.stun && target.alive) hold(target, 'stun', s.stun);
+    prevPt = pt;
+    dmg *= 1 - s.falloff;
+    // Next: nearest enemy to this one that hasn't been hit
+    let next = null, nd = Infinity;
+    for (const e of state.enemies) {
+      if (!canHit(t, e) || hit.has(e)) continue;
+      const d2 = flatDist2(e.pos, target.pos);
+      if (d2 <= jump2 && d2 < nd) { nd = d2; next = e; }
+    }
+    cur = next;
+  }
+  Fx.flash(from, t.def.color, 1.3, 0.2);
+}
+
+/* ---------- Pulses (Frost Obelisk, Ion Pulse) ---------- */
+function firePulse(t) {
+  const s = t.s, r = tRange(t), r2 = r * r;
+  const isFrost = t.key === 'frostObelisk';
+  const color = t.tier >= 2 ? t.def.branches[t.branch].color : t.def.color;
+  for (const e of state.enemies) {
+    if (!canHit(t, e) || flatDist2(e.pos, t.pos) > r2) continue;
+    if (isFrost) {
+      addEffect(e, 'slow', s.slow, s.slowTime);
+      if (s.vuln) addEffect(e, 'vuln', s.vuln, s.slowTime);
+      if (s.shred) addEffect(e, 'shred', s.shred, s.slowTime);
+      if (s.freezeAfter) {
+        e.chill += tInterval(t); e.chillT = tInterval(t) + 0.6;
+        if (e.chill >= s.freezeAfter && e.freezeCd <= 0) { hold(e, 'freeze', s.freeze); e.freezeCd = 6; e.chill = 0; Particles.burst(tmpV.copy(e.pos).setY(0.4), { count: 10, color: 0xdffbff, speed: 1.2, up: 1.2, lifeTime: 0.5 }); }
+      }
+      Particles.burst(tmpV.copy(e.pos).setY(0.35), { count: 3, color: 0xbff4ff, speed: 0.8, up: 0.8, lifeTime: 0.4, gravity: 1 });
+    } else {
+      addEffect(e, 'shred', s.shred, s.shredTime);
+      if (s.shieldStrip && e.maxShield > 0) e.shield = Math.max(0, e.shield - e.maxShield * s.shieldStrip);
+      if (s.energyVuln) addEffect(e, 'eVuln', s.energyVuln, s.shredTime);
+      if (s.interrupt && e.def.boss && (e.interruptCd || 0) <= 0) { e.interrupted = true; e.interruptCd = s.interrupt; Floaters.add('INTERRUPTED', tmpV.copy(e.pos).setY(1.2), 'up'); }
+      Fx.seg(muzzleOf(t).clone(), hitPoint(e, new THREE.Vector3()), color, 0.03, 0.12, 0.7);
+    }
+    damageEnemy(e, s.damage * tDmg(t), s.damageType, t);
+  }
+  Fx.ring(t.pos, 0.3, r, color, isFrost ? 0.6 : 0.45, { thick: !isFrost, opacity: isFrost ? 0.8 : 0.9 });
+  if (isFrost) Fx.ring(t.pos, 0.2, r * 0.7, 0xffffff, 0.45, { opacity: 0.5 });
+  Fx.flash(muzzleOf(t).clone(), color, isFrost ? 1.4 : 1.1, 0.25);
   t.recoil = 1;
-  Events.emit('towerFire', { tower: t });
+}
+
+/* ---------- Gravity Well ---------- */
+/* Stretches of path inside the well, with the point closest to its centre.
+   A pull moves enemies along the path towards that point. */
+function pathAnchors(t) {
+  const r = tRange(t);
+  if (t.anchors && t.anchorsR === r) return t.anchors;
+  const runs = [];
+  let cur = null;
+  const p = new THREE.Vector3();
+  for (let d = 0; d <= map.total; d += 0.1) {
+    samplePath(map, d, p);
+    const dd = Math.sqrt(flatDist2(p, t.pos));
+    if (dd <= r + 0.3) {
+      if (!cur) { cur = { a: d, b: d, best: d, bestD: dd }; runs.push(cur); }
+      cur.b = d;
+      if (dd < cur.bestD) { cur.bestD = dd; cur.best = d; }
+    } else cur = null;
+  }
+  t.anchors = runs; t.anchorsR = r;
+  return runs;
+}
+function fireGravity(t) {
+  const s = t.s, r = tRange(t), r2 = r * r;
+  const runs = pathAnchors(t);
+  const color = t.tier >= 2 ? t.def.branches[t.branch].color : t.def.color;
+  const core = muzzleOf(t).clone();
+  for (const e of state.enemies) {
+    if (!canHit(t, e) || flatDist2(e.pos, t.pos) > r2) continue;
+    const run = runs.find((ru) => e.dist >= ru.a - 0.2 && e.dist <= ru.b + 0.2);
+    if (run) e.shove += Math.max(-s.pull, Math.min(s.pull, run.best - e.dist));
+    damageEnemy(e, s.damage * tDmg(t), s.damageType, t);
+    if (s.crush) damageEnemy(e, e.maxHp * s.crush * (e.def.boss ? 0.5 : 1) * tDmg(t), s.damageType, t, { cont: true });
+    Fx.seg(hitPoint(e, new THREE.Vector3()), core, color, 0.035, 0.3, 0.6);
+    Particles.burst(tmpV.copy(e.pos).setY(0.3), { count: 4, color, speed: 0.6, up: 0.6, lifeTime: 0.4, gravity: 0 });
+  }
+  Fx.ring(t.pos, r, 0.2, color, 0.55, { thick: true });
+  Fx.ring(t.pos, r * 0.75, 0.1, 0xffffff, 0.45, { opacity: 0.5 });
+  Fx.flash(core, color, 1.6, 0.3);
+  t.recoil = 1;
+}
+
+/* ---------- Drones ---------- */
+const droneGeo = {};
+function makeDroneMesh(t) {
+  const P = STYLE.palette;
+  if (!droneGeo.body) {
+    Object.assign(droneGeo, {
+      body: new THREE.OctahedronGeometry(0.075, 0), arm: new THREE.BoxGeometry(0.24, 0.012, 0.022),
+      rotor: new THREE.RingGeometry(0.025, 0.055, 14), eye: new THREE.SphereGeometry(0.028, 8, 6),
+      pod: new THREE.BoxGeometry(0.03, 0.03, 0.09),
+      metal: STYLE.metal(P.steel, 0.4, 0.8), dark: STYLE.metal(P.gunmetal, 0.55, 0.7),
+    });
+  }
+  const G = droneGeo;
+  const color = t.branch === 'b' ? 0xff5f74 : t.def.color;
+  const g = new THREE.Group();
+  const body = new THREE.Mesh(G.body, G.dark);
+  body.scale.set(1, 0.6, 1.25);
+  const rotorMat = STYLE.holo(color, 0.6);
+  const rotors = [];
+  for (const [x, z] of [[-0.11, 0.0], [0.11, 0.0]]) {
+    const r = new THREE.Mesh(G.rotor, rotorMat);
+    r.rotation.x = -Math.PI / 2;
+    r.position.set(x, 0.02, z);
+    rotors.push(r);
+  }
+  const arm = new THREE.Mesh(G.arm, G.metal);
+  const eye = new THREE.Mesh(G.eye, STYLE.glow(color, 3));
+  eye.position.set(0, -0.01, 0.07);
+  g.add(body, arm, eye, ...rotors);
+  if (t.branch === 'b') for (const x of [-0.06, 0.06]) { const pod = new THREE.Mesh(G.pod, G.metal); pod.position.set(x, -0.04, 0.01); g.add(pod); }
+  g.traverse((o) => { if (o.isMesh) o.castShadow = true; });
+  g.userData = { rotors };
+  scene.add(g);
+  return g;
+}
+function syncDrones(t) {
+  const want = t.def.attack === 'drones' ? t.s.drones : 0;
+  // Rebuild so drones match the branch look
+  for (const d of t.drones) scene.remove(d.mesh);
+  const old = t.drones;
+  t.drones = [];
+  for (let i = 0; i < want; i++) {
+    const p = old[i] ? old[i].pos.clone() : new THREE.Vector3(t.pos.x, t.pos.y + 0.7, t.pos.z);
+    t.drones.push({ mesh: makeDroneMesh(t), pos: p, prev: p.clone(), cd: Math.random() * 0.5, ang: (i / want) * Math.PI * 2, yaw: 0, target: null });
+  }
+}
+const goalV = new THREE.Vector3();
+function updateDrones(t, dt) {
+  const s = t.s, n = t.drones.length;
+  if (!n) return;
+  const targets = pickTargets(t, n);
+  t.targetId = targets.length ? targets[0].id : 0;
+  const list = targets.slice();
+  t.drones.forEach((d, i) => {
+    d.prev.copy(d.pos);
+    d.ang += dt * 2.4;
+    const tg = list.length ? list[i % list.length] : null;
+    if (tg) goalV.set(tg.pos.x + Math.cos(d.ang + i * 2.1) * 0.55, 0.95 + Math.sin(d.ang * 1.7 + i) * 0.1 + (tg.def.flying ? 0.5 : 0), tg.pos.z + Math.sin(d.ang + i * 2.1) * 0.55);
+    else goalV.set(t.pos.x + Math.cos(d.ang * 0.6 + (i / n) * Math.PI * 2) * 0.5, t.pos.y + 0.85 + Math.sin(d.ang + i) * 0.06, t.pos.z + Math.sin(d.ang * 0.6 + (i / n) * Math.PI * 2) * 0.5);
+    const to = tmpV.subVectors(goalV, d.pos);
+    const dist = to.length(), maxStep = 6 * dt;
+    if (dist > 0.0001) d.pos.addScaledVector(to, Math.min(1, maxStep / dist) * Math.min(1, dt * 8 + 0.15));
+    d.yaw = tg ? Math.atan2(tg.pos.x - d.pos.x, tg.pos.z - d.pos.z) : Math.atan2(to.x, to.z);
+    d.target = tg;
+    d.cd -= dt;
+    if (tg && d.cd <= 0 && flatDist2(d.pos, tg.pos) < 1.3) {
+      d.cd = 1 / tRate(t);
+      if (s.missiles) {
+        addProjectile({ kind: 'missile', tower: t, target: tg, color: 0xff7a5a, damage: s.damage * tDmg(t), type: s.damageType, speed: 7, pos: d.pos.clone(), aim: hitPoint(tg, new THREE.Vector3()), mesh: getProjectileMesh('orb', 0xff7a5a, 0.6) });
+      } else {
+        const hp = hitPoint(tg, new THREE.Vector3());
+        Fx.seg(d.pos.clone(), hp, t.def.color, 0.025, 0.07, 1);
+        Particles.burst(hp, { count: 3, color: t.def.color, speed: 1.6, up: 0.8, lifeTime: 0.16, gravity: 4 });
+        damageEnemy(tg, s.damage * tDmg(t), s.damageType, t, { boss: s.bossBonus });
+      }
+    }
+  });
+}
+
+/* ---------- One step of every tower ---------- */
+function updateTower(t, dt) {
+  const s = t.s;
+  t.cooldown -= dt;
+  switch (t.def.attack) {
+    case 'shot': {
+      const tg = pickTargets(t, s.shots || 1).slice();
+      t.targetId = tg.length ? tg[0].id : 0;
+      if (tg.length) {
+        t.yaw = Math.atan2(tg[0].pos.x - t.pos.x, tg[0].pos.z - t.pos.z);
+        if (t.cooldown <= 0) {
+          for (const e of tg) fireShot(t, e);
+          t.cooldown = 1 / tRate(t); t.recoil = 1;
+          Events.emit('towerFire', { tower: t });
+        }
+      } else if (t.cooldown < 0) t.cooldown = 0;
+      break;
+    }
+    case 'bolt': {
+      const tg = pickTargets(t, 1)[0];
+      t.targetId = tg ? tg.id : 0;
+      if (tg) {
+        t.yaw = Math.atan2(tg.pos.x - t.pos.x, tg.pos.z - t.pos.z);
+        if (t.cooldown <= 0) { fireBolt(t, tg); t.cooldown = 1 / tRate(t); t.recoil = 1; Events.emit('towerFire', { tower: t }); }
+      } else if (t.cooldown < 0) t.cooldown = 0;
+      break;
+    }
+    case 'shell': {
+      const tg = pickTargets(t, 1, tRange(t), s.minRange)[0];
+      t.targetId = tg ? tg.id : 0;
+      if (tg) {
+        t.yaw = Math.atan2(tg.pos.x - t.pos.x, tg.pos.z - t.pos.z);
+        if (t.cooldown <= 0) { fireShell(t, tg); t.cooldown = 1 / tRate(t); t.recoil = 1; Fx.flash(muzzleOf(t).clone(), t.def.color, 1.2, 0.2); Events.emit('towerFire', { tower: t }); }
+      } else if (t.cooldown < 0) t.cooldown = 0;
+      break;
+    }
+    case 'chain': {
+      const tg = pickTargets(t, 1)[0];
+      t.targetId = tg ? tg.id : 0;
+      if (tg && t.cooldown <= 0) { fireChain(t, tg); t.cooldown = 1 / tRate(t); t.recoil = 1; Events.emit('towerFire', { tower: t }); }
+      else if (!tg && t.cooldown < 0) t.cooldown = 0;
+      break;
+    }
+    case 'beam': {
+      const tg = pickTargets(t, s.beams).slice();
+      const primary = tg.length ? tg[0].id : 0;
+      if (primary !== t.targetId) t.ramp = primary && s.keepCharge ? t.ramp * s.keepCharge : 0;
+      t.targetId = primary;
+      t.beamTargets = tg;
+      t.beamOn = tg.length > 0;
+      if (tg.length) {
+        t.yaw = Math.atan2(tg[0].pos.x - t.pos.x, tg[0].pos.z - t.pos.z);
+        t.ramp = Math.min(1, t.ramp + dt / s.rampTime);
+        const dps = (s.beamMin + (s.beamMax - s.beamMin) * t.ramp) * tDmg(t) * (tg.length > 1 || s.beams > 1 ? s.split : 1);
+        for (const e of tg) damageEnemy(e, dps * dt, s.damageType, t, { cont: true });
+      }
+      break;
+    }
+    case 'pulse': {
+      if (t.cooldown <= 0) {
+        if (anyInRange(t)) { firePulse(t); t.cooldown = tInterval(t); Events.emit('towerFire', { tower: t }); }
+        else t.cooldown = 0;
+      }
+      break;
+    }
+    case 'gravity': {
+      const r2 = tRange(t) ** 2;
+      let any = false;
+      for (const e of state.enemies) {
+        if (!canHit(t, e) || flatDist2(e.pos, t.pos) > r2) continue;
+        any = true;
+        addEffect(e, 'slow', s.insideSlow, 0.2);
+        if (s.vuln) addEffect(e, 'vuln', s.vuln, 0.2);
+      }
+      t.active = any;
+      if (t.cooldown <= 0) {
+        if (any) { fireGravity(t); t.cooldown = tInterval(t); Events.emit('towerFire', { tower: t }); }
+        else t.cooldown = 0;
+      }
+      break;
+    }
+    case 'aura': {
+      const r2 = tRange(t) ** 2;
+      const dps = s.dps * tDmg(t);
+      let any = false, first = null;
+      for (const e of state.enemies) {
+        if (!canHit(t, e) || flatDist2(e.pos, t.pos) > r2) continue;
+        any = true;
+        if (!first || e.dist > first.dist) first = e;
+        addEffect(e, 'slow', s.slow, 0.2);
+        if (s.bleedDps) { addEffect(e, 'bleed', s.bleedDps * tDmg(t), s.bleedTime); e.bleedSrc = t; e.bleedSpread = s.bleedSpread || 0; e.bleedMax = s.bleedTime; }
+        damageEnemy(e, dps * dt, s.damageType, t, { cont: true });
+        if (Math.random() < dt * 4 * Q.fx) Particles.burst(tmpV.copy(e.pos).setY(0.15), { count: 2, color: s.bleedDps ? 0xff5f74 : 0x8dff6a, speed: 1, up: 1.4, lifeTime: 0.35, gravity: 5 });
+      }
+      t.active = any;
+      if (s.rootEvery) {
+        t.rootCd -= dt;
+        if (t.rootCd <= 0 && first) {
+          hold(first, 'root', s.rootTime);
+          t.rootCd = s.rootEvery;
+          t.recoil = 1;
+          Fx.ring(first.pos, 0.6, 0.15, 0xc7ff5a, 0.5, { thick: true });
+          Particles.burst(tmpV.copy(first.pos).setY(0.1), { count: 12, color: 0x8dff6a, speed: 0.8, up: 1.8, lifeTime: 0.6, gravity: 3 });
+          Events.emit('towerFire', { tower: t });
+        }
+      }
+      break;
+    }
+    case 'drones':
+      updateDrones(t, dt);
+      break;
+    default:
+      break;
+  }
 }
 
 /* =====================================================================
    SIMULATION STEP (fixed timestep)
    ===================================================================== */
+const EFFECTS = ['slow', 'vuln', 'shred', 'eVuln', 'burn', 'bleed'];
 function step(dt) {
   state.time += dt;
 
@@ -1607,49 +3070,103 @@ function step(dt) {
     for (const s of state.spawners) {
       if (s.remaining <= 0) continue;
       s.timer -= dt;
-      if (s.timer <= 0) { spawnEnemy(s.enemy); s.remaining--; s.timer += s.interval; }
+      if (s.timer <= 0) { spawnEnemy(s.enemy, s.hp); s.remaining--; s.timer += s.interval; }
     }
   }
 
-  // Enemies walk the path
+  // Queued kill explosions (Phoenix)
+  if (state.blasts.length) {
+    const list = state.blasts.splice(0);
+    for (const b of list) {
+      splashAt(b.pos, b.radius, b.damage, b.type, b.src, { groundOnly: !b.air });
+      Fx.flash(tmpV.copy(b.pos).setY(0.4), b.color, 1.6, 0.28);
+      Fx.ring(b.pos, 0.2, b.radius, b.color, 0.35, { thick: true });
+      Particles.burst(tmpV.copy(b.pos).setY(0.3), { count: 12, color: b.color, speed: 2.4, up: 2, lifeTime: 0.45, gravity: 4 });
+    }
+  }
+
+  // Enemies: status effects, then walk the path
   for (const e of state.enemies) {
     if (!e.alive) continue;
     e.prev.copy(e.pos);
-    e.dist += e.def.speed * dt;
+    for (const k of EFFECTS) if (e[k + 'T'] > 0) e[k + 'T'] -= dt;
+    if (e.burnT > 0) damageEnemy(e, e.burnAmt * dt, 'magic', e.burnSrc, { cont: true });
+    if (e.bleedT > 0 && e.alive) damageEnemy(e, e.bleedAmt * dt, 'magic', e.bleedSrc, { cont: true });
+    if (!e.alive) continue;
+    if (e.chillT > 0) { e.chillT -= dt; if (e.chillT <= 0) e.chill = 0; }
+    if (e.freezeCd > 0) e.freezeCd -= dt;
+    if (e.interruptCd > 0) e.interruptCd -= dt;
+    const spd = enemySpeed(e);
+    if (e.holdT > 0) { e.holdT -= dt; if (e.holdT <= 0) e.holdKind = ''; }
+    e.curSpeed = spd;
+    let move = spd * dt;
+    if (e.shove) { const k = Math.sign(e.shove) * Math.min(Math.abs(e.shove), 5 * dt); move += k; e.shove -= k; if (Math.abs(e.shove) < 1e-3) e.shove = 0; }
+    e.dist = Math.max(0, e.dist + move);
     e.yaw = samplePath(map, e.dist, e.pos);
     if (e.dist >= map.total) leak(e);
   }
 
-  // Towers aim and fire
-  for (const t of state.towers) {
-    t.cooldown -= dt;
-    const target = findTarget(t);
-    t.targetId = target ? target.id : 0;
-    if (target) {
-      t.yaw = Math.atan2(target.pos.x - t.pos.x, target.pos.z - t.pos.z);
-      if (t.cooldown <= 0) { fire(t, target); t.cooldown = 1 / t.def.fireRate; }
-    } else if (t.cooldown < 0) {
-      t.cooldown = 0;
+  // Burning ground
+  for (let i = state.zones.length - 1; i >= 0; i--) {
+    const z = state.zones[i];
+    z.time -= dt;
+    const r2 = z.radius * z.radius;
+    const t = z.tower, s = t.s;
+    for (const e of state.enemies) {
+      if (!e.alive || e.def.flying || flatDist2(e.pos, z.pos) > r2) continue;
+      addEffect(e, 'burn', s.burnDps * tDmg(t), Math.min(s.burnTime, 1));
+      e.burnSrc = t;
     }
+    if (z.time <= 0) { scene.remove(z.mesh); z.mesh.userData.disc.geometry.dispose(); z.mesh.userData.disc.material.dispose(); state.zones.splice(i, 1); }
   }
 
-  // Projectiles home in on their target
+  // Towers
+  updateBuffs();
+  for (const t of state.towers) updateTower(t, dt);
+
+  // Projectiles
   for (const p of state.projectiles) {
     p.prev.copy(p.pos);
     p.age += dt;
-    if (p.target.alive) p.aim.set(p.target.pos.x, p.target.pos.y + p.target.def.hitHeight, p.target.pos.z);
+    if (p.kind === 'shell') {
+      const k = Math.min(1, p.age / p.flight);
+      p.pos.lerpVectors(p.from, p.to, k);
+      p.pos.y += Math.sin(Math.PI * k) * p.arc + (1 - k) * 0.0;
+      p.aim.copy(p.to);
+      if (k >= 1) { p.done = true; shellLanded(p); }
+      continue;
+    }
+    if (p.kind === 'bolt') {
+      const move = p.speed * dt;
+      const a = tmpV.copy(p.pos);
+      p.pos.addScaledVector(p.dir, move);
+      p.travel += move;
+      // Hit everything the bolt passed this step
+      const bx = p.pos.x - a.x, bz = p.pos.z - a.z, L2 = bx * bx + bz * bz;
+      for (const e of state.enemies) {
+        if (!canHit(p.tower, e) || p.hit.has(e)) continue;
+        let k = L2 > 0 ? ((e.pos.x - a.x) * bx + (e.pos.z - a.z) * bz) / L2 : 0;
+        k = Math.max(0, Math.min(1, k));
+        const dx = a.x + bx * k - e.pos.x, dz = a.z + bz * k - e.pos.z;
+        if (dx * dx + dz * dz > 0.36 * 0.36) continue;
+        p.hit.add(e);
+        const s = p.tower.s;
+        damageEnemy(e, p.damage, p.type, p.tower, { ignoreArmor: s.ignoreArmor });
+        if (s.knockback && e.alive) e.shove -= s.knockback * (e.def.boss ? 0.3 : 1);
+        Particles.burst(hitPoint(e, new THREE.Vector3()), { count: 7, color: p.color, speed: 2.4, up: 1, lifeTime: 0.25, gravity: 5 });
+        if (--p.pierceLeft <= 0) { p.done = true; break; }
+      }
+      if (p.travel >= p.maxTravel) p.done = true;
+      continue;
+    }
+    // Homing shots
+    if (p.target.alive) hitPoint(p.target, p.aim);
     const toAim = tmpV.subVectors(p.aim, p.pos);
     const d = toAim.length();
     const move = p.speed * dt;
-    if (d <= move + 0.05) {
-      p.pos.copy(p.aim);
-      p.done = true;
-      if (p.target.alive) damageEnemy(p.target, p.damage, p.type, p.tower);
-      Particles.burst(p.pos, { count: 8, color: p.tower.def.color, speed: 2.8, up: 1.1, lifeTime: 0.26, gravity: 6 });
-      Particles.burst(p.pos, { count: 3, color: 0xffffff, speed: 0.6, up: 0.4, lifeTime: 0.14, gravity: 0 });
-    } else {
-      p.pos.addScaledVector(toAim, move / d);
-    }
+    if (p.kind === 'fireball') p.pos.y += Math.sin(Math.min(1, p.age * 2.5) * Math.PI) * dt * 0.8;   // slight lob
+    if (d <= move + 0.05) { p.pos.copy(p.aim); p.done = true; shotLanded(p); }
+    else p.pos.addScaledVector(toAim, move / d);
     if (p.age > 4) p.done = true;
   }
 
@@ -1785,6 +3302,7 @@ function enterBuild(key) {
   preview = null;
   const def = CONTENT.towers[key];
   if (state.coins < def.cost) toast(`Need ${def.cost - state.coins} more coins`, 'warn');
+  else toast(`${def.name} · ${def.role}`, '', 1600);
   setGhost(key);
   renderCards();
 }
@@ -1813,6 +3331,8 @@ window.addEventListener('keydown', (e) => {
   else if (k === 'f') toggleSpeed();
   else if (k === 'enter') startWave();
   else if (k === 's' && selected) sellTower(selected);
+  else if (k === 't' && selected && selected.def.targets) { const i = TARGETING.findIndex(([m]) => m === selected.targeting); setTargeting(selected, TARGETING[(i + 1) % TARGETING.length][0]); }
+  else if (k === 'u' && selected && selected.tier === 2) upgradeTower(selected, selected.branch);
   else {
     for (const key of map.def.towers) if (CONTENT.towers[key].hotkey === k) enterBuild(key);
   }
@@ -1868,7 +3388,7 @@ function setGhost(key) {
   if (!key) return;
   if (!ghostCache[key]) {
     const def = CONTENT.towers[key];
-    const g = MODELS.towers[def.model](def);
+    const g = MODELS.towers[def.model](def, 1, null);
     g.traverse((o) => {
       if (o.isMesh) {
         o.castShadow = false;
@@ -1906,9 +3426,9 @@ function updateHelpers(dt, t) {
     if (ghost) {
       ghost.visible = !occupied && !map.isPath(showTile.c, showTile.r);
       ghost.position.set(p.x, TILE_H, p.z);
-      ghost.userData.head.rotation.y = t * 0.8;
+      if (ghost.userData.head) ghost.userData.head.rotation.y = t * 0.8;
     }
-    showRange(p, def.range, check.ok ? 0x58e6ff : 0xff5f74);
+    showRange(p, def.stats.range, check.ok ? (def.attack === 'support' ? 0xb07cff : 0x58e6ff) : 0xff5f74);
     // Touch: label telling the player to tap again
     if (preview) {
       const v = tmpV.set(p.x, TILE_H + 1.25, p.z).project(camera);
@@ -1921,7 +3441,7 @@ function updateHelpers(dt, t) {
     highlight.visible = false;
     if (ghost) ghost.visible = false;
     placeHint.hidden = true;
-    if (selected) showRange(selected.pos, selected.def.range, 0x58e6ff);
+    if (selected) showRange(selected.pos, tRange(selected), selected.def.attack === 'support' ? 0xb07cff : selected.tier >= 2 ? selected.def.branches[selected.branch].color : 0x58e6ff);
     else rangeIndicator.visible = false;
   }
 }
@@ -1933,7 +3453,19 @@ const $ = (id) => document.getElementById(id);
 const coinSvg = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="#f5b730"/><circle cx="12" cy="12" r="6.2" fill="none" stroke="#ffe08a" stroke-width="1.6"/></svg>';
 const towerIcons = {
   arcaneArcher: '<svg viewBox="0 0 32 32"><path d="M8 4c9 3 13 11 12 24" stroke="#8fc8ff" stroke-width="2.2" fill="none" stroke-linecap="round" opacity=".9"/><path d="M8 4 20 28" stroke="#dff6ff" stroke-width="1" opacity=".6"/><path d="M4 23 26 9" stroke="#e8fbff" stroke-width="2" stroke-linecap="round"/><path d="M26 9l-5 .6 2.4 3.4z" fill="#8fc8ff"/><circle cx="6" cy="22" r="2.2" fill="#b07cff"/></svg>',
+  fireBrazier: '<svg viewBox="0 0 32 32"><path d="M11 21l-3 7M21 21l3 7" stroke="#8a94a2" stroke-width="2.2" stroke-linecap="round"/><path d="M6 16h20l-3.5 6h-13z" fill="#5a6472"/><path d="M6 16h20" stroke="#ff7a2e" stroke-width="1.6"/><path d="M16 3c3 4 6.5 6.5 4.5 10.5a4.6 4.6 0 0 1-9 0c0-3 2-4 2.2-6.5 1 2 2 2.2 2.3-4z" fill="#ff7a2e"/><path d="M16 8.5c1.5 2 3 3.2 2 5.5a2.1 2.1 0 0 1-4 0c0-1.5 1-2.2 2-5.5z" fill="#ffd27a"/></svg>',
+  frostObelisk: '<svg viewBox="0 0 32 32"><path d="M16 3l5 9.5-5 16.5-5-16.5z" fill="#8fe8ff" opacity=".85"/><path d="M16 3l5 9.5-5 16.5z" fill="#e0fbff" opacity=".55"/><path d="M6 11l4 2.2M26 11l-4 2.2M7 22l4-2M25 22l-4-2" stroke="#bff4ff" stroke-width="1.6" stroke-linecap="round"/><path d="M9 16h14" stroke="#5a6472" stroke-width="2.4"/></svg>',
+  runeShrine: '<svg viewBox="0 0 32 32"><ellipse cx="16" cy="25.5" rx="11" ry="3" fill="none" stroke="#b07cff" stroke-width="1.6"/><rect x="11" y="4" width="10" height="17" rx="1" fill="#3b3550"/><path d="M16 7v11M12.8 10l6.4 3.2-6.4 3.2" stroke="#d6b8ff" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M13 23h6" stroke="#8a94a2" stroke-width="2.4"/></svg>',
+  thornwall: '<svg viewBox="0 0 32 32"><path d="M3 26.5h26" stroke="#2c5226" stroke-width="3" stroke-linecap="round"/><path d="M5 25l3.2-12 3.2 12z" fill="#4f8a3a"/><path d="M11.5 25L16 7l4.5 18z" fill="#6fe06a"/><path d="M20.6 25l3.2-12 3.2 12z" fill="#4f8a3a"/><circle cx="16" cy="8.5" r="1.6" fill="#dfffb0"/></svg>',
+  ballista: '<svg viewBox="0 0 32 32"><path d="M4 13c6-6 18-6 24 0" stroke="#e8c07a" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M4 13l12 4.5L28 13" stroke="#fff3cf" stroke-width="1" fill="none" opacity=".7"/><path d="M16 7v21" stroke="#8a94a2" stroke-width="3.2"/><path d="M16 2.5l-3.4 5.5h6.8z" fill="#ffe7a8"/></svg>',
+  teslaCoil: '<svg viewBox="0 0 32 32"><path d="M13 29h6l-1-14h-4z" fill="#5a6472"/><circle cx="16" cy="9.5" r="5" fill="#9ad8ff"/><circle cx="16" cy="9.5" r="2.4" fill="#f0fbff"/><path d="M11.5 17.5h9M12 21.5h8M12.5 25.5h7" stroke="#c9873a" stroke-width="2"/><path d="M21 6.5l4.5-3-1.6 4.4 4-1" stroke="#e6f6ff" stroke-width="1.4" fill="none" stroke-linejoin="round"/></svg>',
+  laserTurret: '<svg viewBox="0 0 32 32"><rect x="3" y="14" width="12" height="10" rx="2" fill="#5a6472"/><rect x="13" y="16.5" width="8" height="5" fill="#8a94a2"/><path d="M22 19h8" stroke="#ff4d7a" stroke-width="3" stroke-linecap="round"/><circle cx="21.5" cy="19" r="2.6" fill="#ffd0dd"/><path d="M6 11h6" stroke="#ff4d7a" stroke-width="1.6"/></svg>',
+  plasmaMortar: '<svg viewBox="0 0 32 32"><path d="M5 28h15l-2.4-6.5H7.4z" fill="#5a6472"/><path d="M9.5 22.5l5-11.5 4.4 2-4.4 10.5z" fill="#8a94a2"/><path d="M17 10.5c4-6.5 9.5-6.5 11.5 2" stroke="#4dffa6" stroke-width="1.6" fill="none" stroke-dasharray="2 2"/><circle cx="16.8" cy="10.2" r="2.8" fill="#4dffa6"/></svg>',
+  gravityWell: '<svg viewBox="0 0 32 32"><ellipse cx="16" cy="16" rx="13" ry="5" fill="none" stroke="#8f7dff" stroke-width="1.8" transform="rotate(-18 16 16)"/><circle cx="16" cy="16" r="5.2" fill="#0c0820" stroke="#c9b8ff" stroke-width="1.6"/><path d="M4 8.5l4.5 2.6M28 23.5l-4.5-2.6M24 5l-2 3.6" stroke="#c9b8ff" stroke-width="1.4" stroke-linecap="round"/></svg>',
+  droneHive: '<svg viewBox="0 0 32 32"><path d="M16 10l7.5 4.3v8.4L16 27l-7.5-4.3v-8.4z" fill="#3a2f2a" stroke="#ffb347" stroke-width="1.6"/><circle cx="16" cy="18.5" r="2.6" fill="#ffb347"/><path d="M3 7h6M6 5.5v3M23 5h6M26 3.5v3" stroke="#ffd59a" stroke-width="1.7" stroke-linecap="round"/></svg>',
+  ionPulse: '<svg viewBox="0 0 32 32"><path d="M8 28h16l-3-5H11z" fill="#5a6472"/><path d="M6.5 16a9.5 5 0 0 0 19 0z" fill="#8a94a2"/><path d="M16 16V8.5" stroke="#44ffd5" stroke-width="2.2"/><path d="M10.5 7.5a8 8 0 0 1 11 0M7.5 4.5a12.5 12.5 0 0 1 17 0" stroke="#44ffd5" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>',
 };
+const hex = (c) => '#' + c.toString(16).padStart(6, '0');
 let lastHud = {};
 
 function bumpPill(id) {
@@ -1941,6 +3473,7 @@ function bumpPill(id) {
   el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump');
 }
 
+const waveText = (w) => w.groups.map((g) => `${g.count} ${CONTENT.enemies[g.enemy].name}s${g.hp > 1 ? ` · ${g.hp}× health` : ''}`).join(' · ');
 function updateHud(force) {
   const waves = map.def.waves.length;
   const h = { lives: state.lives, coins: state.coins, wave: `${state.waveIndex}/${waves}`, phase: state.phase, speed: state.speed, paused: state.paused };
@@ -1948,14 +3481,14 @@ function updateHud(force) {
   if (force || h.coins !== lastHud.coins) { $('coins').textContent = h.coins; renderCards(); }
   if (force || h.wave !== lastHud.wave) $('wave').textContent = h.wave;
   if (force || h.speed !== lastHud.speed) { $('speed-btn').textContent = h.speed + '×'; $('speed-btn').classList.toggle('on', h.speed > 1); }
-  if (force || h.phase !== lastHud.phase) {
+  if (force || h.phase !== lastHud.phase || h.wave !== lastHud.wave) {
     const btn = $('start-wave');
     const next = map.def.waves[state.waveIndex];
     btn.disabled = state.phase !== 'ready' || !next;
     if (state.phase === 'wave') { $('start-wave-label').textContent = 'Wave running'; $('start-wave-sub').textContent = 'Defend the core'; }
     else if (next) {
       $('start-wave-label').textContent = state.waveIndex === 0 ? 'Start wave' : 'Next wave';
-      $('start-wave-sub').textContent = next.groups.map((g) => `${g.count} ${CONTENT.enemies[g.enemy].name}s`).join(' · ');
+      $('start-wave-sub').textContent = waveText(next);
     }
   }
   if (selected && (force || h.coins !== lastHud.coins)) renderInfo();
@@ -1964,16 +3497,21 @@ function updateHud(force) {
 
 function renderCards() {
   const wrap = $('tower-cards');
-  if (!wrap.children.length) {
-    for (const key of map.def.towers) {
+  const keys = map.def.towers;
+  if (wrap.dataset.map !== map.def.name) {
+    wrap.innerHTML = '';
+    wrap.dataset.map = map.def.name;
+    const compact = keys.length > 4;
+    $('bottom-bar').classList.toggle('compact', compact);
+    for (const key of keys) {
       const def = CONTENT.towers[key];
       const b = document.createElement('button');
-      b.className = 'tower-card';
+      b.className = 'tower-card' + (compact ? ' compact' : '');
       b.dataset.key = key;
-      b.title = `${def.name}: ${def.role}`;
-      const hex = '#' + def.color.toString(16).padStart(6, '0');
-      b.innerHTML = `<div class="ico" style="background:radial-gradient(circle at 50% 40%, ${hex}33, ${hex}0d); box-shadow: 0 0 0 1px ${hex}55 inset">${towerIcons[key] || ''}</div>
-        <div><div class="nm">${def.name}</div><div class="cost">${coinSvg}<span>${def.cost}</span></div></div>
+      b.title = `${def.name} (${def.hotkey}): ${def.role}`;
+      const c = hex(def.color);
+      b.innerHTML = `<span class="side ${def.side}"></span><div class="ico" style="background:radial-gradient(circle at 50% 40%, ${c}33, ${c}0d); box-shadow: 0 0 0 1px ${c}55 inset">${towerIcons[key] || ''}</div>
+        <div class="txt"><div class="nm">${def.name}</div><div class="cost">${coinSvg}<span>${def.cost}</span></div></div>
         <span class="key">${def.hotkey}</span>`;
       b.addEventListener('click', () => enterBuild(key));
       wrap.appendChild(b);
@@ -1984,20 +3522,103 @@ function renderCards() {
     b.classList.toggle('active', buildKey === b.dataset.key);
     b.classList.toggle('poor', state.coins < def.cost);
   }
+  if (buildKey) { const a = wrap.querySelector('.active'); if (a && a.scrollIntoView) a.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }
 }
 
-function renderInfo() {
+/* ---------- Tower panel ---------- */
+const pct = (v) => Math.round(v * 100) + '%';
+const num = (v) => (Math.abs(v - Math.round(v)) < 0.05 ? String(Math.round(v)) : v.toFixed(1));
+/* Rows shown for whichever stats a tower has. Damage includes Rune Shrine boosts. */
+const STAT_ROWS = [
+  ['damage', 'Damage', (v, t, s) => `${num(v * tDmg(t))} ${DAMAGE_TYPES[s.damageType] || ''}`],
+  ['dps', 'Damage', (v, t, s) => `${num(v * tDmg(t))}/s ${DAMAGE_TYPES[s.damageType]}`],
+  ['beamMin', 'Beam', (v, t, s) => `${num(v * tDmg(t))} → ${num(s.beamMax * tDmg(t))}/s over ${s.rampTime} s`],
+  ['fireRate', 'Fire rate', (v, t) => `${+tRate(t).toFixed(2)}/s`],
+  ['interval', 'Pulse', (v, t) => `every ${tInterval(t).toFixed(1)} s`],
+  ['range', 'Range', (v, t, s) => `${tRange(t).toFixed(1)} tiles${s.minRange ? ` (min ${s.minRange})` : ''}`],
+  ['shots', 'Arrows', (v) => `${v} at once`],
+  ['critEvery', 'Crit', (v, t, s) => `every ${v}th shot ×${s.critMult}`],
+  ['splash', 'Splash', (v) => `${v} radius`],
+  ['burnDps', 'Burn', (v, t, s) => `${num(v * tDmg(t))}/s for ${s.burnTime} s`],
+  ['firePatch', 'Burning ground', (v) => `${v} s`],
+  ['explode', 'Kill blast', (v, t) => `${num(v * tDmg(t))} splash`],
+  ['slow', 'Slow', (v, t, s) => `${pct(v)}${s.slowTime ? ` for ${s.slowTime} s` : ''}`],
+  ['insideSlow', 'Slow inside', (v) => pct(v)],
+  ['freezeAfter', 'Freeze', (v, t, s) => `${s.freeze} s after ${v} s slowed`],
+  ['vuln', 'Damage taken', (v) => '+' + pct(v)],
+  ['shred', 'Armor removed', (v, t, s) => `${v} for ${s.shredTime || s.slowTime} s`],
+  ['shieldStrip', 'Shields removed', (v) => pct(v)],
+  ['energyVuln', 'Energy taken', (v) => '+' + pct(v)],
+  ['interrupt', 'Boss interrupt', (v) => `every ${v} s`],
+  ['pierce', 'Passes through', (v) => (v >= 99 ? 'every enemy' : `${v} enemies`)],
+  ['ignoreArmor', 'Armor ignored', (v) => pct(v)],
+  ['knockback', 'Knockback', (v) => `${v} tiles`],
+  ['chains', 'Chains to', (v, t, s) => `${v} enemies (−${pct(s.falloff)} per jump)`],
+  ['stun', 'Stun', (v) => `${v} s`],
+  ['shieldBonus', 'Vs shields', (v) => '+' + pct(v)],
+  ['beams', 'Beams', (v, t, s) => (v > 1 ? `${v} at ${pct(s.split)} each` : '1')],
+  ['keepCharge', 'Keeps charge', (v) => pct(v)],
+  ['bomblets', 'Bomblets', (v, t, s) => `${v} × ${num(s.bombletDamage * tDmg(t))}`],
+  ['pull', 'Pull', (v) => `${v} tiles`],
+  ['crush', 'Crush', (v) => `${pct(v)} of max health`],
+  ['drones', 'Drones', (v, t, s) => `${v}${s.missiles ? ' with missiles' : ''}`],
+  ['bossBonus', 'Vs bosses', (v) => '+' + pct(v)],
+  ['rootEvery', 'Root', (v, t, s) => `${s.rootTime} s every ${v} s`],
+  ['bleedDps', 'Bleed', (v, t, s) => `${num(v * tDmg(t))}/s for ${s.bleedTime} s`],
+  ['bleedSpread', 'Bleed spreads', (v) => `${v} radius`],
+  ['buffDamage', 'Tower damage', (v) => '+' + pct(v)],
+  ['buffRate', 'Tower fire rate', (v) => '+' + pct(v)],
+  ['buffRange', 'Tower range', (v) => '+' + pct(v)],
+  ['trueSight', 'Wraiths', () => 'never missed'],
+];
+function statRows(t) {
+  const s = t.s, rows = [];
+  for (const [k, label, f] of STAT_ROWS) if (s[k] != null && s[k] !== false) rows.push([label, f(s[k], t, s)]);
+  if (t.def.attack !== 'support') rows.push(['Hits', s.air ? 'Ground and air' : 'Ground only']);
+  return rows;
+}
+function upgradeButton(t, br, wide) {
+  const next = t.tier + 1;
+  const b = t.def.branches[br];
+  const cost = upgradeCost(t.def, next);
+  const tier = b.tiers[next - 2];
+  const then = next === 2 ? `<small class="then">Tier 3: ${b.tiers[1].desc}</small>` : '';
+  return `<button class="up-btn${wide ? ' wide' : ''}${state.coins < cost ? ' poor' : ''}" data-up="${br}" data-cost="${cost}" style="--bc:${hex(b.color)}">
+    <b>${next === 2 ? (br === 'a' ? 'A · ' : 'B · ') : 'Tier 3 · '}${b.name}</b><small>${tier.desc}</small>${then}
+    <span class="uc">${coinSvg}<span>${cost}</span></span></button>`;
+}
+let infoKey = '';
+function renderInfo(full) {
   const el = $('tower-info');
-  if (!selected) { el.hidden = true; return; }
+  if (!selected) { el.hidden = true; infoKey = ''; return; }
   const t = selected, d = t.def;
-  const refund = Math.floor(t.spent * d.sellRefund);
+  const refund = Math.floor(t.spent * TOWER_RULES.sellRefund);
+  const key = [t.id, t.tier, t.branch, t.targeting, t.buff.from > 0].join('|');
+  if (!full && key === infoKey && !el.hidden) {
+    // Quick refresh: numbers and affordability only (keeps buttons under the finger)
+    el.querySelectorAll('.up-btn').forEach((b) => b.classList.toggle('poor', state.coins < +b.dataset.cost));
+    $('ti-kills').textContent = t.kills;
+    $('ti-dealt').textContent = Math.round(t.dealt);
+    $('sell-btn').textContent = `Sell +${refund}`;
+    return;
+  }
+  infoKey = key;
+  const br = t.branch ? d.branches[t.branch] : null;
+  let up = '';
+  if (t.tier === 1) up = `<div class="ti-label">Upgrade · pick a branch</div><div class="up-grid">${upgradeButton(t, 'a')}${upgradeButton(t, 'b')}</div>`;
+  else if (t.tier === 2) up = `<div class="ti-label">Upgrade</div><div class="up-grid">${upgradeButton(t, t.branch, true)}</div>`;
+  else up = `<div class="maxed">Fully upgraded</div>`;
+  const tg = d.targets ? `<div class="ti-label">Target</div><div class="target-seg">${TARGETING.map(([m, label, tip]) => `<button class="btn${t.targeting === m ? ' sel' : ''}" data-tg="${m}" title="${tip}">${label}</button>`).join('')}</div>` : '';
+  const boosted = t.buff.from > 0 ? `<div class="ti-buff">Boosted by a Rune Shrine</div>` : '';
   el.innerHTML = `
-    <h3>${d.name}</h3>
+    <div class="ti-head"><h3>${d.name}</h3><span class="tier-badge" style="${br ? `color:${hex(br.color)};border-color:${hex(br.color)}88` : ''}">Tier ${t.tier}</span></div>
+    ${br ? `<div class="ti-branch" style="color:${hex(br.color)}">${br.name}</div>` : ''}
     <div class="role">${d.role}</div>
-    <div class="stat-row"><span>Damage</span><span>${d.damage} ${d.damageType}</span></div>
-    <div class="stat-row"><span>Range</span><span>${d.range} tiles</span></div>
-    <div class="stat-row"><span>Fire rate</span><span>${d.fireRate} / sec</span></div>
-    <div class="stat-row"><span>Kills</span><span>${t.kills}</span></div>
+    ${boosted}
+    <div class="ti-stats">${statRows(t).map(([a, b]) => `<div class="stat-row"><span>${a}</span><span>${b}</span></div>`).join('')}
+    <div class="stat-row"><span>Kills · dealt</span><span><span id="ti-kills">${t.kills}</span> · <span id="ti-dealt">${Math.round(t.dealt)}</span></span></div></div>
+    <div class="ti-tg">${tg}</div>
+    <div class="ti-up">${up}</div>
     <div class="info-actions">
       <button class="btn danger" id="sell-btn">Sell +${refund}</button>
       <button class="btn ghost" id="close-info">Close</button>
@@ -2005,8 +3626,9 @@ function renderInfo() {
   el.hidden = false;
   $('sell-btn').onclick = () => sellTower(t);
   $('close-info').onclick = () => deselect();
+  el.querySelectorAll('[data-up]').forEach((b) => (b.onclick = () => upgradeTower(t, b.dataset.up)));
+  el.querySelectorAll('[data-tg]').forEach((b) => (b.onclick = () => setTargeting(t, b.dataset.tg)));
 }
-// Keep kill counts fresh while a tower is selected
 let infoRefresh = 0;
 
 /* ---------- Settings ---------- */
@@ -2071,42 +3693,64 @@ $('start-wave').addEventListener('click', startWave);
 const overlay = $('overlay');
 function hideOverlay() { overlay.hidden = true; overlay.innerHTML = ''; }
 
+/* ---------- Modes: World 1 (normal) or the test range ---------- */
+function setMode(key) {
+  const def = CONTENT.maps[key];
+  if (map.def === def) return;
+  CURRENT_MAP = key;
+  const same = JSON.stringify(def.path) === JSON.stringify(map.def.path) && def.cols === map.cols && def.rows === map.rows;
+  if (same) map.def = def;   // same board, only the rules change
+  else { map = buildMapModel(def); buildBoard(); }
+  $('test-pill').hidden = !def.test;
+  renderCards();
+}
+function startRun(key) {
+  hideOverlay();
+  setMode(key);
+  resetGame();
+  state.phase = 'ready';
+  if (!map.def.test) { Save.data.stats.runs++; Save.write(); }
+  updateHud(true);
+  fitCamera();
+  toast(map.def.test ? 'Test range: every tower unlocked, 3000 coins' : 'Place a tower, then start the wave', '', 2400);
+}
+
 function showTitle() {
   const s = Save.data.stats;
   overlay.innerHTML = `
     <div class="card glass">
-      <div class="eyebrow">Phase 2 · Visual direction</div>
+      <div class="eyebrow">Phase 3 · Towers</div>
       <h1>Arcane &amp; Starlight Defense</h1>
-      <p>Goblin raiders are pouring out of the rift gate. Keep them away from the energy core.</p>
+      <p>Raiders are pouring out of the rift gate. Keep them away from the energy core.</p>
       <ul>
-        <li><b>Build:</b> pick the Arcane Archer below, then tap a metal deck tile. On a phone, tap once to preview and again to build.</li>
-        <li><b>Inspect or sell:</b> tap a tower you've built.</li>
-        <li><b>Start:</b> press <b>Start wave</b> when you're ready. Each goblin that reaches the core costs one life.</li>
+        <li><b>Build:</b> pick a tower below, then tap a metal deck tile. On a phone, tap once to preview and again to build.</li>
+        <li><b>Upgrade:</b> tap a tower you've built. At tier 2 you pick one of two branches; tier 3 finishes it.</li>
+        <li><b>Target:</b> towers that aim can go for the first, last, strongest or closest enemy.</li>
       </ul>
-      <div class="actions"><button class="btn" id="title-settings">Settings</button><button class="btn primary" id="play-btn">Play</button></div>
-      <div class="foot">World 1 · Overgrown outpost${s.runs ? ` · Runs ${s.runs} · Wins ${s.wins}` : ''}<br>Keys: 1 tower · Enter wave · Space pause · F speed · Esc cancel</div>
+      <div class="actions">
+        <button class="btn" id="title-settings">Settings</button>
+        <button class="btn" id="test-btn">Test mode</button>
+        <button class="btn primary" id="play-btn">Play</button>
+      </div>
+      <div class="foot"><b>Play</b>: World 1 with its three towers. <b>Test mode</b>: all 12 towers, 3000 coins, 12 waves that get tougher.<br>
+      <span class="keys">${s.runs ? `Runs ${s.runs} · Wins ${s.wins} · ` : ''}Keys: 1–9, 0, −, = towers · T target · U upgrade · Enter wave · Space pause · F speed</span></div>
     </div>`;
   overlay.hidden = false;
   $('title-settings').onclick = () => showSettings('title');
-  $('play-btn').onclick = () => {
-    hideOverlay();
-    resetGame();
-    state.phase = 'ready';
-    Save.data.stats.runs++;
-    Save.write();
-    updateHud(true);
-    fitCamera();
-    toast('Place a tower, then start the wave', '', 2200);
-  };
+  $('play-btn').onclick = () => startRun('trainingGrove');
+  $('test-btn').onclick = () => startRun('testRange');
 }
 
 function showPause() {
+  const test = map.def.test;
   overlay.innerHTML = `
     <div class="card glass">
-      <div class="eyebrow">Paused</div>
+      <div class="eyebrow">Paused${test ? ' · Test range' : ''}</div>
       <h2>Defense on hold</h2>
       <p>Wave ${state.waveIndex}/${map.def.waves.length} · ${state.lives} lives · ${state.coins} coins</p>
+      ${test ? '<div class="actions"><button class="btn" id="coins-btn">+1000 coins</button><button class="btn" id="skip-btn">Skip to next wave</button></div>' : ''}
       <div class="actions">
+        <button class="btn" id="menu-btn">Menu</button>
         <button class="btn" id="restart-btn">Restart</button>
         <button class="btn" id="pause-settings">Settings</button>
         <button class="btn primary" id="resume-btn">Resume</button>
@@ -2115,31 +3759,47 @@ function showPause() {
   overlay.hidden = false;
   $('resume-btn').onclick = togglePause;
   $('pause-settings').onclick = () => showSettings('pause');
-  $('restart-btn').onclick = () => { hideOverlay(); resetGame(); state.phase = 'ready'; Save.data.stats.runs++; Save.write(); updateHud(true); };
+  $('restart-btn').onclick = () => startRun(CURRENT_MAP);
+  $('menu-btn').onclick = () => { resetGame(); state.phase = 'title'; showTitle(); };
+  if (test) {
+    $('coins-btn').onclick = () => { state.coins += 1000; bumpPill('coins-pill'); updateHud(); showPause(); };
+    $('skip-btn').onclick = () => {
+      // Clear the board and jump ahead one wave (handy for trying late waves)
+      for (const e of state.enemies) e.alive = false;
+      state.spawners.forEach((s) => (s.remaining = 0));
+      if (state.phase === 'ready' && state.waveIndex < map.def.waves.length) state.waveIndex++;
+      state.phase = 'ready';
+      if (state.waveIndex >= map.def.waves.length) state.waveIndex = map.def.waves.length - 1;
+      updateHud(true);
+      showPause();
+    };
+  }
 }
 
 function showEnd(won) {
   const s = state.stats;
-  if (won) {
+  const test = map.def.test;
+  if (won && !test) {
     Save.data.stats.wins++;
     Save.data.stats.bestLives = Math.max(Save.data.stats.bestLives, state.lives);
     Save.write();
   }
   overlay.innerHTML = `
     <div class="card glass ${won ? 'win' : 'lose'}">
-      <div class="eyebrow">${won ? 'Victory' : 'Defeat'}</div>
+      <div class="eyebrow">${won ? 'Victory' : 'Defeat'}${test ? ' · Test range' : ''}</div>
       <h2>${won ? (state.lives === map.def.startLives ? 'Flawless defense!' : state.lives <= 5 ? 'Held by a thread!' : 'The core holds!') : 'The core has fallen'}</h2>
-      <p>${won ? `You cleared the wave with ${state.lives} of ${map.def.startLives} lives left.` : 'Too many goblins reached the core. Try more towers near the corners, where the path passes twice.'}</p>
+      <p>${won ? `You cleared ${map.def.waves.length > 1 ? 'every wave' : 'the wave'} with ${state.lives} of ${map.def.startLives} lives left.` : 'Too many raiders reached the core. Try upgrading towers near the corners, where the path passes twice.'}</p>
       <div class="stats">
         <div class="stat"><b>${state.lives}</b><span>Lives</span></div>
         <div class="stat"><b>${s.kills}</b><span>Kills</span></div>
         <div class="stat"><b>${s.earned}</b><span>Coins won</span></div>
       </div>
-      <div class="actions"><button class="btn primary" id="again-btn">Play again</button></div>
-      <div class="foot">Best: ${Save.data.stats.bestLives} lives · Wins ${Save.data.stats.wins} of ${Save.data.stats.runs} runs</div>
+      <div class="actions"><button class="btn" id="menu-btn">Menu</button><button class="btn primary" id="again-btn">Play again</button></div>
+      <div class="foot">${test ? 'Test runs are not counted in your stats.' : `Best: ${Save.data.stats.bestLives} lives · Wins ${Save.data.stats.wins} of ${Save.data.stats.runs} runs`}</div>
     </div>`;
   overlay.hidden = false;
-  $('again-btn').onclick = () => { hideOverlay(); resetGame(); state.phase = 'ready'; Save.data.stats.runs++; Save.write(); updateHud(true); };
+  $('again-btn').onclick = () => startRun(CURRENT_MAP);
+  $('menu-btn').onclick = () => { resetGame(); state.phase = 'title'; showTitle(); };
 }
 
 /* =====================================================================
@@ -2259,16 +3919,46 @@ function drawWorld(dt, vdt, alpha) {
   for (const e of state.enemies) {
     e.mesh.position.lerpVectors(e.prev, e.pos, alpha);
     e.mesh.rotation.y = lerpAngle(e.mesh.rotation.y, e.yaw, 1 - Math.exp(-14 * dt));
-    e.anim += vdt * e.def.speed * 7;
     const u = e.mesh.userData;
+    const held = e.holdT > 0;
+    e.anim += vdt * (e.curSpeed ?? e.def.speed) * 7;
     u.bob.position.y = Math.abs(Math.sin(e.anim)) * 0.06;
-    u.bob.rotation.z = Math.sin(e.anim) * 0.08;
+    u.bob.rotation.z = Math.sin(e.anim) * 0.08 + (e.holdKind === 'stun' ? Math.sin(t * 30) * 0.06 : 0);
     u.armL.rotation.x = Math.sin(e.anim) * 0.7;
     u.armR.rotation.x = -Math.sin(e.anim) * 0.7;
     e.spawnT = Math.min(1, e.spawnT + vdt * 4);
     e.mesh.scale.setScalar(0.4 + 0.6 * easeOutBack(e.spawnT));
     e.flash = Math.max(0, e.flash - vdt * 7);
-    e.bodyMat.emissive.setRGB(e.flash, e.flash, e.flash);
+    // Status tint on top of the hit flash
+    let r = 0, g = 0, b = 0;
+    if (e.holdKind === 'freeze') { r = 0.25; g = 0.7; b = 1; }
+    else if (e.holdKind === 'stun') { const k = Math.sin(t * 20) > 0 ? 0.6 : 0.25; r = k; g = k; b = 0.15; }
+    else if (e.holdKind === 'root') { r = 0.1; g = 0.45; b = 0.05; }
+    else if (e.slowT > 0) { r = 0.05; g = 0.18; b = 0.45 * e.slowAmt * 2; }
+    if (e.burnT > 0) { const k = 0.25 + Math.sin(t * 18 + e.id) * 0.12; r += k * 1.4; g += k * 0.5; }
+    if (e.vulnT > 0) { r += 0.1; b += 0.15; }
+    e.bodyMat.emissive.setRGB(Math.min(1.5, r + e.flash), Math.min(1.5, g + e.flash), Math.min(1.5, b + e.flash));
+    // Ice shell and root vines
+    if (e.holdKind === 'freeze' && !e.ice) {
+      e.ice = new THREE.Mesh(geo('IcosahedronGeometry', 0.34, 0), new THREE.MeshStandardMaterial({ color: 0xc8f6ff, emissive: 0x3fc8ff, emissiveIntensity: 0.6, transparent: true, opacity: 0.55, roughness: 0.1, depthWrite: false }));
+      e.ice.position.y = 0.32; e.ice.scale.set(1, 1.35, 1);
+      e.mesh.add(e.ice);
+    }
+    if (e.ice) e.ice.visible = e.holdKind === 'freeze';
+    if (e.holdKind === 'root' && !e.vines) {
+      e.vines = new THREE.Mesh(geo('TorusGeometry', 0.2, 0.035, 5, 14), STYLE.glow(0x6fe06a, 1.2));
+      e.vines.rotation.x = Math.PI / 2; e.vines.position.y = 0.08;
+      e.mesh.add(e.vines);
+    }
+    if (e.vines) { e.vines.visible = e.holdKind === 'root'; e.vines.rotation.z += dt * 3; }
+    if (vdt > 0) {
+      const fxk = vdt * Q.fx;
+      if (e.burnT > 0 && Math.random() < fxk * 10) Particles.burst(tmpV.copy(e.mesh.position).setY(0.3 + Math.random() * 0.3), { count: 1, color: Math.random() < 0.5 ? 0xff7a2e : 0xffcf5a, speed: 0.3, up: 1.4, lifeTime: 0.45, gravity: -1 });
+      if (e.slowT > 0 && !held && Math.random() < fxk * 4) Particles.burst(tmpV.copy(e.mesh.position).setY(0.5), { count: 1, color: 0xbff4ff, speed: 0.3, up: 0.2, lifeTime: 0.5, gravity: 1.5 });
+      if (e.bleedT > 0 && Math.random() < fxk * 6) Particles.burst(tmpV.copy(e.mesh.position).setY(0.3), { count: 1, color: 0xff3a4e, speed: 0.2, up: 0.2, lifeTime: 0.5, gravity: 6 });
+      if (e.holdKind === 'stun' && Math.random() < fxk * 16) { const a = t * 9 + e.id; Particles.trail(tmpV.set(e.mesh.position.x + Math.cos(a) * 0.2, 0.75, e.mesh.position.z + Math.sin(a) * 0.2), 0xffe36a, 0.2); }
+      if (e.shredT > 0 && Math.random() < fxk * 3) Particles.burst(tmpV.copy(e.mesh.position).setY(0.45), { count: 1, color: 0xff9a3a, speed: 1, up: 0.8, lifeTime: 0.25, gravity: 4 });
+    }
     const hpK = Math.max(0, e.hp / e.maxHp);
     e.hb.group.visible = hpK < 1;
     if (hpK < 1) {
@@ -2284,32 +3974,95 @@ function drawWorld(dt, vdt, alpha) {
     if (tw.popT < 1) {
       tw.popT = Math.min(1, tw.popT + dt * 1.9);
       const k = 1 - Math.pow(1 - tw.popT, 2);
-      const h = tw.pos.y + (u.height || 1) * k + 0.02;
+      const h = tw.pos.y + (u.height || 1) * tw.mesh.scale.y * k + 0.02;
       tw.clip.constant = tw.popT >= 1 ? 1e4 : h;
-      tw.scanRing.position.set(tw.pos.x, h, tw.pos.z);
-      tw.scanRing.material.opacity = 0.9 * (1 - tw.popT * 0.6);
+      if (tw.scanRing) {
+        tw.scanRing.position.set(tw.pos.x, h, tw.pos.z);
+        tw.scanRing.material.opacity = 0.9 * (1 - tw.popT * 0.6);
+      }
       if (Math.random() < 0.5) Particles.trail(tmpV.set(tw.pos.x + (Math.random() - 0.5) * 0.7, h, tw.pos.z + (Math.random() - 0.5) * 0.7), tw.def.color, 0.3);
-      if (tw.popT >= 1) { scene.remove(tw.scanRing); tw.scanRing.material.dispose(); tw.scanRing = null; }
+      if (tw.popT >= 1 && tw.scanRing) { scene.remove(tw.scanRing); tw.scanRing.material.dispose(); tw.scanRing = null; }
     }
-    if (tw.targetId) u.head.rotation.y = lerpAngle(u.head.rotation.y, tw.yaw, 1 - Math.exp(-18 * dt));
-    else u.head.rotation.y += vdt * 0.4;   // idle scan
+    if (u.head) {
+      if (u.aims && tw.targetId) u.head.rotation.y = lerpAngle(u.head.rotation.y, tw.yaw, 1 - Math.exp(-18 * dt));
+      else u.head.rotation.y += vdt * 0.4;   // idle scan
+    }
     tw.recoil = Math.max(0, tw.recoil - vdt * 6);
-    u.recoil.position.z = -0.09 * tw.recoil;
-    u.bolt.visible = tw.recoil < 0.5;
+    if (u.recoil) {
+      const off = -0.09 * tw.recoil * (u.recoilScale || 1);
+      if (u.recoilAxis === 'y') u.recoil.position.y = off; else u.recoil.position.z = off;
+    }
     const flick = Math.sin(t * 2 + tw.id) * 0.2;
     u.glow.emissiveIntensity = 1.5 + tw.recoil * 3 + flick + (selected === tw ? 0.8 : 0);
-    u.holoMat.opacity = 0.45 + tw.recoil * 0.4 + (Math.sin(t * 23 + tw.id * 3) > 0.92 ? -0.25 : 0) + (selected === tw ? 0.15 : 0);
-    u.runeRing.rotation.z += dt * (0.5 + tw.recoil * 2);
+    if (u.runeRing) u.runeRing.rotation.z += dt * (0.5 + tw.recoil * 2);
     u.runeMat.opacity = 0.6 + Math.sin(t * 1.7 + tw.id) * 0.2;
-    u.gemMat.emissiveIntensity = 2 + Math.sin(t * 3 + tw.id) * 0.6;
-    u.gem.rotation.y += dt * 2;
+    if (u.tierGlow) u.tierGlow.emissiveIntensity = 0.9 + Math.sin(t * 3 + tw.id) * 0.25 + (selected === tw ? 0.5 : 0);
+    if (u.halo) { u.halo.rotation.y += dt * 1.1; u.halo.position.y = (u.height - 0.08) / tw.mesh.scale.y + Math.sin(t * 2 + tw.id) * 0.03; }
+    if (u.anim) u.anim(tw, dt, t, vdt);
+    // Rune Shrine boost: a violet rune ring under boosted towers
+    if (tw.buff.from > 0) {
+      if (!tw.buffRing) {
+        tw.buffRing = new THREE.Mesh(geo('RingGeometry', 0.3, 0.52, 40), STYLE.holo(STYLE.palette.rune, 0.6, runeTex));
+        tw.buffRing.rotation.x = -Math.PI / 2;
+        tw.buffRing.renderOrder = 4;
+        scene.add(tw.buffRing);
+      }
+      tw.buffRing.visible = true;
+      tw.buffRing.position.set(tw.pos.x, TILE_H + 0.015, tw.pos.z);
+      tw.buffRing.rotation.z -= dt * 0.7;
+      tw.buffRing.material.opacity = 0.45 + Math.sin(t * 2.5 + tw.id) * 0.15;
+    } else if (tw.buffRing) tw.buffRing.visible = false;
+    // Laser beams
+    if (tw.def.attack === 'beam') {
+      const want = tw.beamOn ? tw.beamTargets.length : 0;
+      tw.beamFx ||= [];
+      while (tw.beamFx.length < want) {
+        const core = Fx.makeSeg(0xffffff), glow = Fx.makeSeg(tw.def.color);
+        scene.add(core, glow);
+        tw.beamFx.push({ core, glow });
+      }
+      const from = want ? muzzleOf(tw).clone() : null;
+      tw.beamFx.forEach((bm, i) => {
+        const e = tw.beamTargets[i];
+        const on = i < want && e && e.alive;
+        bm.core.visible = bm.glow.visible = on;
+        if (!on) return;
+        const to = tmpV.copy(e.mesh.position).setY(e.mesh.position.y + e.def.hitHeight);
+        const ramp = tw.ramp, wob = 1 + Math.sin(t * 50 + i) * 0.12;
+        const w = (0.02 + ramp * 0.035) * wob * (i ? 0.75 : 1);
+        Fx.place(bm.core, from, to, w);
+        Fx.place(bm.glow, from, to, w * 3.2);
+        bm.core.material.opacity = 0.95;
+        bm.glow.material.opacity = 0.35 + ramp * 0.35;
+        bm.glow.material.color.set(tw.branch === 'b' && i ? 0xc9a6ff : tw.def.color);
+        if (vdt > 0 && Math.random() < vdt * (8 + ramp * 20) * Q.fx) Particles.burst(to, { count: 1, color: Math.random() < 0.5 ? tw.def.color : 0xffffff, speed: 1.8, up: 1, lifeTime: 0.25, gravity: 5 });
+      });
+    }
+    // Drones fly between steps, so they are smoothed like enemies
+    for (const d of tw.drones) {
+      d.mesh.position.lerpVectors(d.prev, d.pos, alpha);
+      d.mesh.position.y += Math.sin(t * 6 + tw.id + d.ang) * 0.015;
+      d.mesh.rotation.y = lerpAngle(d.mesh.rotation.y, d.yaw, 1 - Math.exp(-10 * dt));
+      d.mesh.rotation.z = Math.sin(t * 3 + d.ang) * 0.12;
+      for (const r of d.mesh.userData.rotors) r.rotation.z += dt * 40;
+    }
   }
   // Projectiles leave a short glowing trail
   for (const p of state.projectiles) {
     p.mesh.position.lerpVectors(p.prev, p.pos, alpha);
-    p.mesh.lookAt(p.aim);
-    if (vdt > 0) Particles.trail(p.mesh.position, p.tower.def.color, 0.14);
+    if (p.mesh.userData.look === 'arrow') p.mesh.lookAt(p.aim);
+    if (vdt > 0) {
+      Particles.trail(p.mesh.position, p.color, p.kind === 'shell' ? 0.3 : p.kind === 'fireball' ? 0.25 : 0.14);
+      if (p.kind === 'fireball' && Math.random() < 0.6) Particles.burst(p.mesh.position, { count: 1, color: 0xffcf5a, speed: 0.4, up: 0.6, lifeTime: 0.3, gravity: -0.5 });
+    }
   }
+  // Burning ground flickers
+  for (const z of state.zones) {
+    const d = z.mesh.userData.disc;
+    d.material.opacity = Math.min(1, z.time * 2) * (0.5 + Math.sin(t * 12 + z.pos.x * 7) * 0.12);
+    if (vdt > 0 && Math.random() < vdt * 12 * Q.fx) { const a = Math.random() * Math.PI * 2, rr = Math.random() * z.radius; Particles.burst(tmpV.set(z.pos.x + Math.cos(a) * rr, PATH_H + 0.05, z.pos.z + Math.sin(a) * rr), { count: 1, color: Math.random() < 0.5 ? 0xff7a2e : 0xffcf5a, speed: 0.2, up: 1.3, lifeTime: 0.5, gravity: -0.8 }); }
+  }
+  Fx.update(vdt);
   // Sold towers scan out top-down
   for (let i = fx.vanishing.length - 1; i >= 0; i--) {
     const v = fx.vanishing[i];
@@ -2406,7 +4159,7 @@ requestAnimationFrame((t) => { last = t; frame(t); });
 
 // Handy for testing in the browser console
 window.ASD = {
-  state, CONTENT, startWave, buildTower, step, map: () => map,
+  state, CONTENT, startWave, buildTower, upgradeTower, setTargeting, setMode, startRun, step, map: () => map,
   tileToScreen(c, r) { const v = map.toWorld(c, r, TILE_H).project(camera); return { x: (v.x * 0.5 + 0.5) * innerWidth, y: (-v.y * 0.5 + 0.5) * innerHeight }; },
 };
 </script>

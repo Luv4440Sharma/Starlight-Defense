@@ -4,18 +4,17 @@ A fantasy-and-sci-fi tower defense game that runs in a single web page. Built ph
 
 **Play:** https://luv4440sharma.github.io/Starlight-Defense/
 
-## Current build: Phase 2 (visual direction, style D)
+## Current build: Phase 3 (towers)
 
-Style D: crisp sci-fi with magic accents. World 1 is an overgrown outpost.
+All 12 towers from the brief, each with three tiers. At tier 2 you pick Branch A or B; tier 3 finishes that branch.
 
-- Board: metal deck tiles with moss, vines and grass, a glowing hologram path that flows toward the core, and a forest with tech beacons around the platform
-- Models: Arcane Archer turret with a hologram bow and a spinning rune ring, goblins in tech gear, an energy core in a metal cradle, and a rift gate
-- Lighting: cool key light, cyan and violet rim lights, soft shadows, metal reflections, and bloom (glow) on High quality
-- Effects: towers scan in as holograms and scan out when sold, defeated enemies dissolve, shots leave trails and sparks, wave banners
-- Sci-fi screen layout, plus a Settings screen (graphics quality High/Low, screen shake On/Off) saved in the browser
-- All colours and materials come from one `STYLE` kit, so later towers and enemies match
-
-Phase 1 engine features are unchanged: one Arcane Archer tower, one wave of 18 goblins, sell for 70%, pause and 1×/2× speed, mouse and touch.
+- Towers: Arcane Archer, Fire Brazier, Frost Obelisk, Rune Shrine, Thornwall, Ballista (fantasy); Tesla Coil, Laser Turret, Plasma Mortar, Gravity Well, Drone Hive, Ion Pulse (sci-fi)
+- Attack types: homing shots, piercing bolts, lobbed shells with bomblets, chain lightning, ramping lasers, pulses, close-range auras, gravity pulls, hunting drones, and a support shrine that boosts nearby towers
+- Effects on enemies: slow, freeze, stun, root, burn, bleed, armor removed, extra damage taken, knockback and pull, each with its own look
+- Damage types (Pierce, Magic, Energy, Blast) and resistances are in the engine, ready for the Phase 4 enemies
+- Targeting per tower: First, Last, Strong or Close
+- Upgrade costs: tier 2 is 1.2x the build cost, tier 3 is 2x. Selling returns 70% of everything spent
+- **Play** gives World 1 with its three towers. **Test mode** unlocks all 12 towers with 3000 coins and 12 waves of goblins that get tougher, plus +1000 coins and wave skip in the pause menu
 
 ## How it's built
 
@@ -26,4 +25,4 @@ Phase 1 engine features are unchanged: one Arcane Archer tower, one wave of 18 g
 
 ## Controls (keyboard)
 
-`1` Arcane Archer · `Enter` start wave · `Space` pause · `F` speed · `S` sell selected · `Esc` cancel
+`1`-`9`, `0`, `-`, `=` towers · `T` change target · `U` upgrade to tier 3 · `Enter` start wave · `Space` pause · `F` speed · `S` sell selected · `Esc` cancel
